@@ -16,7 +16,8 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -50,7 +51,8 @@ public class EmpresaService {
 	@Autowired
     private ConfiguracionCorreoRepository configuracionCorreoRepository;
 	
-	private static final Logger logger = Logger.getLogger(EmpresaService.class); // Evita la declaración estática del
+	private static final Logger logger =
+	        LoggerFactory.getLogger(EmpresaService.class); // Evita la declaración estática del
 
 	@Autowired
 	private final JasperReportController jasperReportController;

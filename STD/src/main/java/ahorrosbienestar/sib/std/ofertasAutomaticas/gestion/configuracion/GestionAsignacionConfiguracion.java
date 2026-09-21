@@ -10,7 +10,8 @@ import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +34,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.consultaInfo.service.Informac
 @EnableScheduling
 public class GestionAsignacionConfiguracion {
 	
-    private static final Logger logger = Logger.getLogger(GestionAsignacionConfiguracion.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(GestionAsignacionConfiguracion.class);
 
     @Autowired
 	private InformacionService informacionService;

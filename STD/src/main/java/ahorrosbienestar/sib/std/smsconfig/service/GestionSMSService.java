@@ -9,7 +9,8 @@ import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Service
 public class GestionSMSService {
 	
-	private static final Logger logger = Logger.getLogger(GestionSMSService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(GestionSMSService.class);
 	
 	@Autowired
 	private IGestionSMSRepository gestionRepository;

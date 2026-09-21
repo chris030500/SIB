@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("credito")
 public class CampaniasTemporalesController {
-	private static final Logger logger = Logger.getLogger(CampaniasTemporalesController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CampaniasTemporalesController.class);
 
 	@Autowired
 	private IRelRolOpcionesRepository iRelRolOpcionesRepository;

@@ -43,7 +43,8 @@ import ahorrosbienestar.sib.std.config_ws.cat_conf_ws.model.CatConfWS;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.model.WSAutenticacionUser;
 import ahorrosbienestar.sib.std.config_ws.ws_autenticacion_user.service.WSAutenticacionUserService;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @CrossOrigin
 @RestController
@@ -87,7 +88,8 @@ public class AutorizacionRestController {
 	@Autowired
 	private BitacoraConsumoService bitacoraConsumoService;
 
-	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(AutorizacionRestController.class);
 
 	// Metodo para autorizar el estatus de una solicitud a autorizado/rechazado
 	@RequestMapping(value = { "/autorizar_la_solicitud" }, method = RequestMethod.GET)

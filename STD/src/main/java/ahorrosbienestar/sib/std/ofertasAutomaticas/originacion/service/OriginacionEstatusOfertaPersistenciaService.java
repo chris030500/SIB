@@ -10,7 +10,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.repository.IOrigi
 @Service
 public class OriginacionEstatusOfertaPersistenciaService {
 
-	private static final Logger logger = Logger.getLogger(OriginacionEstatusOfertaPersistenciaService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(OriginacionEstatusOfertaPersistenciaService.class);
 	private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	@Autowired

@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
  
 import java.time.LocalDateTime;
  
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ProcesosPEPsService {
-     private static final Logger logger = Logger.getLogger(ProcesosPEPsService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ProcesosPEPsService.class);
     @Autowired
     private ProcesosPEPsRepository procesosPEPsRepository;
  

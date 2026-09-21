@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -67,7 +68,8 @@ public class AdminSMSController {
 	@Autowired
 	private ProcesoSMSService procesoSMSService;
 
-	private static final Logger logger = Logger.getLogger(AdminSMSController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(AdminSMSController.class);
 	private static final String nombreReporte = "rpt_sms";
 	private static final String controllerReporte = "generarReporte";
 

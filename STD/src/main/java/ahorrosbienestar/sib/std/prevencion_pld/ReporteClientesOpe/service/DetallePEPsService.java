@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +16,8 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.util.ExcelPEPR
 @Service
 public class DetallePEPsService {
 
-    private static final Logger logger =
-            Logger.getLogger(DetallePEPsService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(DetallePEPsService.class);
 
     private final DetallePEPsRepository detallePEPsRepository;
 

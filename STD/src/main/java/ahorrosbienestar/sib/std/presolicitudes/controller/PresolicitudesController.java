@@ -23,7 +23,8 @@ import java.util.stream.Collectors;
 import jakarta.mail.internet.InternetAddress;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -81,7 +82,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 // @RequestScope // <- opcional si quisieras garantizar aislamiento por request
 public class PresolicitudesController {
 
-    private static final Logger logger = Logger.getLogger(PresolicitudesController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PresolicitudesController.class);
 
     @Autowired private EmpresaService empresaService;
     @Autowired private ClienteActivoService clienteActivoService;

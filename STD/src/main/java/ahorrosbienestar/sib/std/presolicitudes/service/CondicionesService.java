@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.presolicitudes.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,8 @@ import ahorrosbienestar.sib.std.presolicitudes.repository.CondicionesRepository;
 @Service
 public class CondicionesService {
 
-    private static final Logger logger = Logger.getLogger(CondicionesService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CondicionesService.class);
 
     @Autowired
     private CondicionesRepository condicionesRepository;

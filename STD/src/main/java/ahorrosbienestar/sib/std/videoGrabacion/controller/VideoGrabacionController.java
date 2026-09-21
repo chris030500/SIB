@@ -20,7 +20,8 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.repository.ISolicitudEnvio;
 import ahorrosbienestar.sib.std.videoGrabacion.model.VideoGrabacionDatos;
 import ahorrosbienestar.sib.std.videoGrabacion.service.VideoGrabacionService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequestMapping("/videoGrabacion")
@@ -42,7 +43,8 @@ public class VideoGrabacionController {
 	@Autowired
 	private IProcesoValidacionRepository iProcesoValidacionRepository;
 	
-	private static final Logger logger = Logger.getLogger(VideoGrabacionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(VideoGrabacionController.class);
 	
 	
 	@Autowired
@@ -60,7 +62,7 @@ public class VideoGrabacionController {
 			return "videoGrabacion/videograbacionConsulta";
 		} catch (Exception e) {
 			//logger.info("mensaje"+e.getMessage());
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			//System.out.print("mensaje"+e.getMessage());
 		}
 		return null;
@@ -75,7 +77,7 @@ public class VideoGrabacionController {
 						
 		} catch (Exception e) {
 			//System.out.print("--"+e.getMessage());
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 		}
 		return null;
 	}
@@ -89,7 +91,7 @@ public class VideoGrabacionController {
 						
 		} catch (Exception e) {
 			//System.out.print("--"+e.getMessage());
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 		}
 		return null;
 	}

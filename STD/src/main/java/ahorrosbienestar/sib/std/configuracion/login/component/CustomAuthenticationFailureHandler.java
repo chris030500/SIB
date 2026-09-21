@@ -8,7 +8,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -33,7 +34,8 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Autowired
     private ConfigService configService;
 
-    private static final Logger logger = Logger.getLogger(CustomAuthenticationFailureHandler.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(CustomAuthenticationFailureHandler.class);
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,

@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.configuracion.login.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +16,8 @@ public class LoginService {
 	JdbcTemplate jdbcTemplate;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(LoginService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(LoginService.class);
 
 	public void spActivarSesion(String usuario) {
 		//System.out.println("Ejecutando spActivarSesion");

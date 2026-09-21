@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,7 +26,8 @@ import ahorrosbienestar.sib.std.correoCSO.model.CorreoCSO;
 @Service
 public class CatalogosCEService {
 
-	private static final Logger logger = Logger.getLogger(CatalogosCEService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CatalogosCEService.class);
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired

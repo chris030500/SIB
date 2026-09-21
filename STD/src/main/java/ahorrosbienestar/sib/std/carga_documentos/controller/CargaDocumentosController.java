@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.carga_documentos.controller;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,8 @@ public class CargaDocumentosController {
 	private ConfigService configService;
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(CargaDocumentosController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CargaDocumentosController.class);
 
 	// Consultar la url para el almacenamiento para de los archivos pdf
 	@GetMapping

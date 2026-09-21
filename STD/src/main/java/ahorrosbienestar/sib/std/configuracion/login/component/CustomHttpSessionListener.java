@@ -4,7 +4,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ public class CustomHttpSessionListener implements HttpSessionListener{
 	@Autowired
 	UsuarioService usuarioService;
 	
-	private static final Logger logger = Logger.getLogger(CustomHttpSessionListener.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CustomHttpSessionListener.class);
 	
 	@Override
 	 public void sessionCreated(HttpSessionEvent se) {

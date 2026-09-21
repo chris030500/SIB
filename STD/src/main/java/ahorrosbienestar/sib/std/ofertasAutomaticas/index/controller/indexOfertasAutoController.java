@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
  
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -73,7 +75,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("/ofertasAutomaticas")
 public class indexOfertasAutoController {
  
-    private static final Logger logger = Logger.getLogger(indexOfertasAutoController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(indexOfertasAutoController.class);
  
     // Constante Nomina
     private final static int NOMINA = 1;
@@ -350,7 +353,7 @@ public class indexOfertasAutoController {
     @GetMapping("/consultaTabla")
     public ResponseEntity<?> consultaTabla(@RequestParam(name = "idBase") Integer idBase){        
         try {
-            logger.info(idBase);
+        	logger.info("idBase: {}", idBase);
             logger.info("/consultaTabla"+idBase);
             List<DetalleCampania> detalleCampania = new ArrayList<>();
             switch (idBase) {

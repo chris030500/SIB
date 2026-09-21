@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,7 +27,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("clientes")
 public class ClienteBloqueadosController {
 
-    private static final Logger logger = Logger.getLogger(ClienteBloqueadosController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ClienteBloqueadosController.class);
     private static final String ERROR_LOG = "Error: ";
 
     @Autowired

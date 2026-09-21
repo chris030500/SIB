@@ -9,7 +9,8 @@ import java.time.format.DateTimeFormatter;
 
 import jakarta.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -33,7 +34,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.gestion.service.SucursalesNot
 @EnableScheduling
 public class EnvioCorreoReasigNSegConfig {
 
-    private static final Logger logger = Logger.getLogger(EnvioCorreoReasigNSegConfig.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(EnvioCorreoReasigNSegConfig.class);
 
     @Autowired SucursalesNotificarService sucursalesNotificarService;
     

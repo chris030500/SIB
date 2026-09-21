@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,7 +65,8 @@ public class UsuarioController {
     private static final String rutaError = "errores/error_403";
     private String rutaDireccion="";
     //protected final Log logger = LogFactory.getLog(this.getClass());
-    private static final Logger logger = Logger.getLogger(UsuarioController.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(UsuarioController.class);
  
     // Inicio de usuarios
     @GetMapping("/formulario")

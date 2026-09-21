@@ -1,7 +1,8 @@
 package ahorrosbienestar.sib.std.config_ws.ws_respuesta_autenticacion.controller;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ import ahorrosbienestar.sib.std.configuracion.login.controller.LoginController;
 public class WSRespuestaAutenticacionController {
  
     //protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(WSRespuestaAutenticacionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(WSRespuestaAutenticacionController.class);
     
     @Autowired
     private WSAutenticacionUserService wsAutenticacionUserService;

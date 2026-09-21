@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ahorrosbienestar.sib.std.catalogo_contratos.service.CatContratoService;
 import ahorrosbienestar.sib.std.catalogos.repository.ICatalogoRepository;
@@ -42,7 +43,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 public class ProductoController {
 
 	private ProductoService productoService;
-	private static final Logger logger = Logger.getLogger(ProductoController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ProductoController.class);
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;

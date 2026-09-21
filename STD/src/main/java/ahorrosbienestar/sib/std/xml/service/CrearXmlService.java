@@ -15,7 +15,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Attr;
@@ -73,7 +74,8 @@ public class CrearXmlService {
 	@Autowired
 	private SolicitudEnvioService solicitudEnvioService;
 
-	private static final Logger logger = Logger.getLogger(CrearXmlService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CrearXmlService.class);
 
 	public String crearArchivoXML(Integer solicitudEnvio, Integer solicitudCore) {
 

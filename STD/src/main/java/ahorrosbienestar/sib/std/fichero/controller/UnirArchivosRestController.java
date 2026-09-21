@@ -9,7 +9,8 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,7 +43,8 @@ public class UnirArchivosRestController {
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	
-	private static final Logger logger = Logger.getLogger(UnirArchivosRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(UnirArchivosRestController.class);
 
 	@Autowired
 	private ObtenerCoordenadasJDBCService obtenerCoordenadasJDBCService;
@@ -242,7 +244,7 @@ public class UnirArchivosRestController {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error al unir los archivos");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			//Error: " + e.getMessage());
 			return ResponseEntity.ok(e.getMessage());
 			// e.printStackTrace();

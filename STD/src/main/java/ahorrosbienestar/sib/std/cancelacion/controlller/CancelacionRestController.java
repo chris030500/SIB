@@ -24,7 +24,8 @@ import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -53,7 +54,8 @@ public class CancelacionRestController {
 	@Autowired
 	private HistoricoNotificacionService historicoNotificacionService;
 	
-	private static final Logger logger = Logger.getLogger(CancelacionRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CancelacionRestController.class);
 
 	// Método que cancela de manera manual
 	@RequestMapping(value = { "/cancelar_solicitud_envio" }, method = RequestMethod.GET)
@@ -86,7 +88,7 @@ public class CancelacionRestController {
 		model.setI_estatus(ESTATUS_CANCELAR_MANUAL);
 		model.setVc_obser_cancelacion(motivo);
 		
-		logger.info(fechaLocal);
+		logger.info("Fecha local: {}", fechaLocal);
 		
 		model.setDt_fecha_cancelacion(fechaLocal);
 		model.setVc_hora_cancelacion(hora);
@@ -162,7 +164,7 @@ public class CancelacionRestController {
 					model.setVc_obser_cancelacion("Cancelación por proceso automático.");
 					model.setDt_fecha_cancelacion(fechaLocal);
 					
-					logger.info(fechaLocal);
+					logger.info("Fecha local: {}", fechaLocal);
 					
 					model.setFk_usr_cancela(usuario);
 					solicitudEnvioService.save(model);

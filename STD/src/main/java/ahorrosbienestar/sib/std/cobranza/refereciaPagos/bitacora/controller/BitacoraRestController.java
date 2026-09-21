@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.cobranza.refereciaPagos.bitacora.controller;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import ahorrosbienestar.sib.std.cobranza.refereciaPagos.bitacora.model.BitacoraModel;
@@ -17,7 +18,8 @@ public class BitacoraRestController {
 	private BitacoraService bitacoraService;
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(BitacoraRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(BitacoraRestController.class);
 
 	public void guardarBitacora(ConsultaModel consultaModel, CuentasClienteModel cuentasClienteModel) {
 

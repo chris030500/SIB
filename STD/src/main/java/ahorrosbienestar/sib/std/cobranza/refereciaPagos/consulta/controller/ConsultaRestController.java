@@ -1,7 +1,8 @@
 package ahorrosbienestar.sib.std.cobranza.refereciaPagos.consulta.controller;
 
 import java.time.LocalDate;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,7 +32,8 @@ public class ConsultaRestController {
 	CuentasClienteService cuentasClienteService;
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(ConsultaRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ConsultaRestController.class);
 
 	public ConsultaModel guardarConsulta(ConsultaDTO dto, CuentasClienteModel cuenta) {
 

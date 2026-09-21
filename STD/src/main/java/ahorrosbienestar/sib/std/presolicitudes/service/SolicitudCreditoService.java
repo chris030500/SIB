@@ -7,7 +7,8 @@ import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 @Service
 public class SolicitudCreditoService {
 
-	private final Logger logger = Logger.getLogger(SolicitudCreditoService.class); // Corregido para no ser estático
+	private static final Logger logger =
+	        LoggerFactory.getLogger(SolicitudCreditoService.class); // Corregido para no ser estático
 
 	@Autowired
     private SolicitudCreditoRepository solicitudCreditoRepository;

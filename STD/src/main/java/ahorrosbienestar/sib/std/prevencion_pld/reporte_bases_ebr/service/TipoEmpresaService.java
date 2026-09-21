@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,8 @@ import ahorrosbienestar.sib.std.prevencion_pld.reporte_bases_ebr.repository.ITip
 @Service
 public class TipoEmpresaService {
 	
-	private static final Logger logger = Logger.getLogger(TipoEmpresaService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(TipoEmpresaService.class);
 	
 	@Autowired
 	private ITipoEmpresaRepository tipoEmpresaRepository;

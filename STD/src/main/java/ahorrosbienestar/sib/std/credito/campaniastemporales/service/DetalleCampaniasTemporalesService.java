@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class DetalleCampaniasTemporalesService {
 	
-	private static final Logger logger = Logger.getLogger(DetalleCampaniasTemporalesService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(DetalleCampaniasTemporalesService.class);
 
 	@Autowired
 	DetalleCampaniasTemporalesRepository detalleCampaniasTemporalesRepository;

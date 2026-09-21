@@ -8,7 +8,8 @@ package ahorrosbienestar.sib.std.configuracion.service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class ConfiguracionService {
 	private BCryptPasswordEncoder passwordEncoder;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(ConfiguracionService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ConfiguracionService.class);
 
 	public void procActualizarSesion(int dias) {
 		logger.info("Ejecutando actualizar sesión");

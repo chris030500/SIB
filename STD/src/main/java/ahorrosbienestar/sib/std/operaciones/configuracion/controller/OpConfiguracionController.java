@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.operaciones.configuracion.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +31,8 @@ import lombok.AllArgsConstructor;
 @RequestMapping("operaciones")
 public class OpConfiguracionController {
 
-    private static final Logger logger = Logger.getLogger(OpConfiguracionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(OpConfiguracionController.class);
 
     @Autowired
     private MicrofinUsuarioService microfinUsuarioService;

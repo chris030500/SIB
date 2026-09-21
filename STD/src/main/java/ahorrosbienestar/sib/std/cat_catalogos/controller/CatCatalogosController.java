@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,8 @@ public class CatCatalogosController {
     private static final int grupoBloqueo = 24;
 	private static final int grupoTipoGes = 26;
  
-    private static final Logger logger = Logger.getLogger(CatCatalogosController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(CatCatalogosController.class);
  
     @RequestMapping(value = { "/lista_accionRealizar" }, method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> listaAccionRealizar() {

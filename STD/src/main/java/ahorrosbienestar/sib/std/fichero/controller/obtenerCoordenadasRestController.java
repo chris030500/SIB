@@ -4,7 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class obtenerCoordenadasRestController {
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	
-	private static final Logger logger = Logger.getLogger(obtenerCoordenadasRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(obtenerCoordenadasRestController.class);
 
 	// Obtener las coordenadas del archivo Pagare
 //	@GetMapping()
@@ -199,7 +201,7 @@ public class obtenerCoordenadasRestController {
 			// TODO: handle exception
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento pagare");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento pagare");
 		}
 //		logger.info("Se obtuvieron correctamente las coordenadas del documento pagare");
@@ -286,7 +288,7 @@ public class obtenerCoordenadasRestController {
 			// TODO: handle exception
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento tabla de amortización");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento tabla de amortización");
 		}
 		// logger.info("Se obtuvieron correctamente las coordenadas del documento tabla
@@ -473,7 +475,7 @@ public class obtenerCoordenadasRestController {
 			// TODO: handle exception
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento anexo contrato");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento anexo contrato");
 		}
 
@@ -801,7 +803,7 @@ public class obtenerCoordenadasRestController {
 			// TODO: handle exception
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento contrato de apertura");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento contrato de apertura");
 		}
 
@@ -1236,7 +1238,7 @@ public class obtenerCoordenadasRestController {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento de formato de domiciliacion");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento de formato de domiciliacion");
 		}
 
@@ -1393,7 +1395,7 @@ public class obtenerCoordenadasRestController {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento de autorización de transferencia");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento de autorización de transferencia");
 		}
 		
@@ -1423,7 +1425,7 @@ public class obtenerCoordenadasRestController {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 			logger.error("Error al obtener las coordenadas del documento");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			return ResponseEntity.ok("Error al obtener las coordenadas del documento ");
 		}
 		

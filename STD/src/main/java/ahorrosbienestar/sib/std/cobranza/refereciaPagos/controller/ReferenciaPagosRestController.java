@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.cobranza.refereciaPagos.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,7 +71,8 @@ public class ReferenciaPagosRestController {
 	private static final String leyenda = "LeyendaRP";
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(ReferenciaPagosRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ReferenciaPagosRestController.class);
 
 	private static final String nombreReporte = "rpt_historial_busqueda_rp";
 	private static final String nombreExportar = "rpt_referencia_pagos";

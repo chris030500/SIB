@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,8 @@ import ahorrosbienestar.sib.std.menuProducto.clienteBloqueados.repository.IClien
 
 @Service
 public class ClientesBloqueadosService {
-	private static final Logger logger = Logger.getLogger(ClientesBloqueadosService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ClientesBloqueadosService.class);
 	
 	private IClientesBloqueadosRepository iClientesBloqueadosRepository;
 	
@@ -28,7 +30,7 @@ public class ClientesBloqueadosService {
 			return iClientesBloqueadosRepository.buscarClientesBloqueados();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			logger.error(e.getStackTrace());
+			logger.error("Ocurrió un error durante el proceso", e);
 			return Collections.emptyList();
 		}
 		

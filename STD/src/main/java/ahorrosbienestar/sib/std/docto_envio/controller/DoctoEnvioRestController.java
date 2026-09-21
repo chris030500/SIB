@@ -9,7 +9,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -71,7 +72,8 @@ public class DoctoEnvioRestController {
 	obtenerCoordenadasRestController obtenerCoordenadasRestController;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(DoctoEnvioRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(DoctoEnvioRestController.class);
 	
 	@PostMapping
 	public ResponseEntity<?> guardarDoctoEnvio(@RequestParam(name = "solicitud") Integer solicitud,

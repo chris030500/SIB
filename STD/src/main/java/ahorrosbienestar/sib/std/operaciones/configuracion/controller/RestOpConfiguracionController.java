@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,7 +71,8 @@ public class RestOpConfiguracionController {
 	@Autowired
 	private CitasVencidosService citasVencidosService;
 
-	private static final Logger logger = Logger.getLogger(RestOpConfiguracionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(RestOpConfiguracionController.class);
 
 	private static final int idGrupo = 13;
 
@@ -871,7 +873,7 @@ public class RestOpConfiguracionController {
 			@RequestBody RelacionDTO dto,
 			@RequestParam("idRelacion") int idRelacion) {
 		
-		logger.info(dto.getIdTipoGes());
+		logger.info("IdTipoGes: {}", dto.getIdTipoGes());
 		
 		Map<String, Object> respuesta = new HashMap<>();
 		String mensajeError = null;

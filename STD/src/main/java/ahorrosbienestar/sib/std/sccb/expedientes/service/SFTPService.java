@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.sccb.expedientes.service;
 
 import java.io.ByteArrayOutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ import ahorrosbienestar.sib.std.comunes.Constantes;
 @Service
 public class SFTPService {
 
-    private static final Logger logger = Logger.getLogger(SFTPService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(SFTPService.class);
 
     @Value("${sftp.sccb.host}")
     private String host;

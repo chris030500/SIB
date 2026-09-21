@@ -6,7 +6,8 @@ import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,7 +39,8 @@ public class NominaTareaConfiguracion {
     BasesService basesService;
 
 
-    private static final Logger logger = Logger.getLogger(NominaTareaConfiguracion.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(NominaTareaConfiguracion.class);
 
 	@Autowired
 	private TaskScheduler taskSchedulerNomina;

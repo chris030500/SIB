@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.xml.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,8 @@ public class ValidityXmlService {
 	private JdbcTemplate jdbcTemplate;
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(ValidityXmlService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ValidityXmlService.class);
 
 	@Autowired
 	public ValidityXmlService(JdbcTemplate jdbcTemplate) {

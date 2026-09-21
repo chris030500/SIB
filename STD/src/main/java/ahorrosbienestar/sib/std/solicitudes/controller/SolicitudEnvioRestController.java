@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -93,7 +94,8 @@ public class SolicitudEnvioRestController {
 	private HistoNotificacionMensajeService histoNotificacionMensajeService;
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(SolicitudEnvioRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(SolicitudEnvioRestController.class);
 
 	@PostMapping("/solicitudEnvio/guardarSolicitudEnvio")
 	public ResponseEntity<?> guardarSolicitudEnvio(

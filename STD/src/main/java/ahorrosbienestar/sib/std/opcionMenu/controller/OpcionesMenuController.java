@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.opcionMenu.controller;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +20,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("opciones")
 public class OpcionesMenuController {
-	private static final Logger logger = Logger.getLogger(OpcionesMenuController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(OpcionesMenuController.class);
 
 	@Autowired
 	private CoreBancarioService coreBancarioService;

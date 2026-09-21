@@ -14,7 +14,8 @@ import java.util.Properties;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -76,7 +77,8 @@ public class ConfiguracionController {
 	private AccesoService accesoService;
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(ConfiguracionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ConfiguracionController.class);
 
 	private static final String rutaError = "errores/error_403";
 	private String rutaDireccion="";

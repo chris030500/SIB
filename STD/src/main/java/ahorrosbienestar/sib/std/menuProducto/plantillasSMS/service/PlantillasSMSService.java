@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.menuProducto.plantillasSMS.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,8 @@ import ahorrosbienestar.sib.std.menuProducto.plantillasSMS.repository.IPlantilla
 
 @Service
 public class PlantillasSMSService {
-	private static final Logger logger = Logger.getLogger(PlantillasSMSService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PlantillasSMSService.class);
 	private IPlantillasSMSRespository iPlantillasSMSRespository;
 	
 	@Autowired

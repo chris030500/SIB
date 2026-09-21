@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -53,7 +54,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("planAccion")
 public class PlanAccionController {
 
-	private static final Logger logger = Logger.getLogger(PlanAccionController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PlanAccionController.class);
 
 	
 	@Autowired
@@ -189,7 +191,7 @@ public class PlanAccionController {
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
 		}
-		logger.info(respuesta);
+		logger.info("Respuesta: {}", respuesta);
 		return ResponseEntity.ok(respuesta);
 	}
 	/**
@@ -213,13 +215,13 @@ public class PlanAccionController {
 				correoCSOService.registrarCorreo(idObservacion,1);
 				respuesta.add(mensaje);
 			}
-			logger.info(respuesta);
+			logger.info("Respuesta: {}", respuesta);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("error:"+e.getMessage());
 			mensaje = e.getMessage();
 			respuesta.add(mensaje);
-			logger.info(respuesta);
+			logger.info("Respuesta: {}", respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
 		
@@ -383,12 +385,12 @@ public class PlanAccionController {
 			planAccionService.modificarPA(idActividad,nombreActividad,idEncargado,dtFechaInicio,dtFechaVencimiento,usuarioAutenticado.getPk_id_usuario(),confirmaResponsable);
 			catalogosCEService.actEstatus(idActividad,4,5);
 			catalogosCEService.actEstatusCascada(idActividad);
-			logger.info(respuesta);
+			logger.info("Respuesta: {}", respuesta);
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			respuesta.add(""+e.getMessage());
-			logger.info(respuesta);
+			logger.info("Respuesta: {}", respuesta);
 			return ResponseEntity.ok(respuesta);
 		}
 	}

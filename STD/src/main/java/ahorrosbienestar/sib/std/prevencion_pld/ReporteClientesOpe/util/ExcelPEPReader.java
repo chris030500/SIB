@@ -4,7 +4,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,8 +13,8 @@ import ahorrosbienestar.sib.std.prevencion_pld.ReporteClientesOpe.model.DetalleP
 
 public class ExcelPEPReader {
 
-    private static final Logger logger =
-            Logger.getLogger(ExcelPEPReader.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ExcelPEPReader.class);
 
     private ExcelPEPReader() {}
 

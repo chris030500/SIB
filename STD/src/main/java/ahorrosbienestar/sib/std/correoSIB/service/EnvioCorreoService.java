@@ -9,7 +9,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -46,7 +47,8 @@ public class EnvioCorreoService {
 	private final EnvioCorreoContenidoService envioCorreoContenidoService;
 	
 	
-	private static final Logger logger = Logger.getLogger(EnvioCorreoService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(EnvioCorreoService.class);
 	
 	@Autowired
 	public EnvioCorreoService(JavaMailSender mailSender, EnvioCorreoContenidoService envioCorreoContenidoService, JasperReportController jasperReportController) {

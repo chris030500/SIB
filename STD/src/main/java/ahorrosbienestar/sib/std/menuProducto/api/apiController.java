@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.menuProducto.api;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,8 @@ import ahorrosbienestar.sib.std.menuProducto.administracionSMS.service.MensajeSM
 @RequestMapping("/api/respuestaSMS")
 public class apiController {
 	
-	private static final Logger logger = Logger.getLogger(apiController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(apiController.class);
 
     @Autowired
     private MensajeSMSService mensajeService;

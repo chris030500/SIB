@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.comunes.paramConstantes.utilerias;
 import java.io.InputStream;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,7 +19,8 @@ import ahorrosbienestar.sib.std.usuarios.model.Usuario;
 
 public class ExcelCargar {
 	
-			private static final Logger logger = Logger.getLogger(ExcelCargar.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ExcelCargar.class);
 			
 		    public static ResultadoCargaExcel parseDetalleTemporales(MultipartFile file, Optional<TiposCampaniasModel>  campania, Usuario usuario) throws Exception {
 		        

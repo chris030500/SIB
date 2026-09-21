@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,8 @@ import ahorrosbienestar.sib.std.menuProducto.exclusionesBNomina.repository.IMuni
 @Service
 public class MunicipiosRepubService {
 	
-	private static final Logger logger = Logger.getLogger(MunicipiosRepubService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(MunicipiosRepubService.class);
 	
 	@Autowired
 	private IMunicipiosRepubRepository iMunicipiosRepubRepository;

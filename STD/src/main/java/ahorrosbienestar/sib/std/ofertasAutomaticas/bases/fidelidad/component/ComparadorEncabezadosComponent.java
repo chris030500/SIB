@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.*;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,7 +27,8 @@ public class ComparadorEncabezadosComponent {
     @Autowired
     ConfigService configService;
 
-    private static final Logger logger = Logger.getLogger(ComparadorEncabezadosComponent.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(ComparadorEncabezadosComponent.class);
 
     private String propiedadNombreHoja = "hojaFidelidad";
     private String propiedadEncabezados = "encabezadosFidelidad";

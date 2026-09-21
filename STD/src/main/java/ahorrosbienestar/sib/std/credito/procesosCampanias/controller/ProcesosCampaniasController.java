@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,8 @@ import ahorrosbienestar.sib.std.credito.procesosCampanias.dto.ProcesosCampaniasD
 
 public class ProcesosCampaniasController {
 	
-	private static final Logger logger = Logger.getLogger(ProcesosCampaniasController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ProcesosCampaniasController.class);
 	
 	private static final String controllerReporte = "generarReporte";
 	

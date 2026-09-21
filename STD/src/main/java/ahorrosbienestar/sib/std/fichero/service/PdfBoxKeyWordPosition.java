@@ -8,7 +8,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
@@ -17,7 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PdfBoxKeyWordPosition extends PDFTextStripper {
 
-    private static final Logger logger = Logger.getLogger(PdfBoxKeyWordPosition.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PdfBoxKeyWordPosition.class);
 
     private char[] key;
     private String pdfPath;

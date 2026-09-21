@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.prevencion_pld.pld.general;
 
 import java.time.LocalDate;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -65,7 +66,8 @@ public class CrudRestController {
 	private BitacoraPldService bitacoraPldService;
 
 	// Logger
-	private static final Logger logger = Logger.getLogger(AutorizacionRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(AutorizacionRestController.class);
 
 	// Guardado exclusion
 	@RequestMapping(value = {

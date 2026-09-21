@@ -20,7 +20,8 @@ import java.util.Optional;
 //import jakarta.servlet.ServletOutputStream;
 //import java.io.OutputStream;
  
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,7 +60,8 @@ import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service.Migracion
 @RequestMapping("/prevencion")
 public class RptReporteClientesOpeController {
  
-    private static final Logger logger = Logger.getLogger(RptReporteClientesOpeController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(RptReporteClientesOpeController.class);
  
     @Autowired
     private IUsuarioRepository iUsuarioRepository;

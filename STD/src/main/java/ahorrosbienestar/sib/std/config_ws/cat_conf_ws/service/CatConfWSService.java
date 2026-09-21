@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.config_ws.cat_conf_ws.service;
 
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,8 @@ public class CatConfWSService {
     private ICatConfWSRepository iCatConfWSRepository;
     
     //protected final Log logger = LogFactory.getLog(this.getClass());
-    private static final Logger logger = Logger.getLogger(CatConfWSService.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(CatConfWSService.class);
     
     @Autowired
     public CatConfWSService(ICatConfWSRepository iCatConfWSRepository) {

@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.firma_docto_unificado.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,8 @@ public class FirmaDoctoUnificadoService {
 	private IFirmaDoctoUnificadoRepository iFirmaDoctoUnificadoRepository;
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(FirmaDoctoUnificadoService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(FirmaDoctoUnificadoService.class);
 
 	@Autowired
 	public FirmaDoctoUnificadoService(IFirmaDoctoUnificadoRepository iFirmaDoctoUnificadoRepository) {

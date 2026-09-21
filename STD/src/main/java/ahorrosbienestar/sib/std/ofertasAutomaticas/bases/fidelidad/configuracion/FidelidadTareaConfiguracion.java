@@ -19,7 +19,8 @@ import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -88,7 +89,8 @@ public class FidelidadTareaConfiguracion {
         this.taskSchedulerFidelidad = taskSchedulerFidelidad;
     }
 
-	private static final Logger logger = Logger.getLogger(FidelidadTareaConfiguracion.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(FidelidadTareaConfiguracion.class);
 
 	private boolean isRunning = false; // Variable de bloqueo
 	private int contRegistro = 0;

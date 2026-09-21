@@ -45,7 +45,8 @@ import ahorrosbienestar.sib.std.configuracion.model.Configuracion;
 import ahorrosbienestar.sib.std.configuracion.service.ConfigService;
 import ahorrosbienestar.sib.std.solicitudes.model.SolicitudEnvio;
 import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -90,7 +91,8 @@ public class DescargaRestController {
 	// Variable que utiliza el método de extraer archivos del zip
 	private static final int BUFFER_SIZE = 4096;
 
-	private static final Logger logger = Logger.getLogger(DescargaRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(DescargaRestController.class);
 
 	/**
 	 * Método para crear guardar la documentacion
@@ -182,7 +184,7 @@ public class DescargaRestController {
 	        moveFile(archivoFad, destinoCarpeta);
 		}catch (Exception e) {
 			// TODO: handle exception
-			logger.info(e);
+			logger.error("Error al ejecutar el proceso", e);
 		}
 		
 	}
@@ -514,7 +516,7 @@ public class DescargaRestController {
 
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error(e);
+			logger.info("Error: {}", e.getMessage());
 		}
 
 	}
@@ -637,7 +639,7 @@ public class DescargaRestController {
 			logger.info("Guardar model");
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error(e);
+			logger.info("Error: {}", e.getMessage());
 		}
 	}
 

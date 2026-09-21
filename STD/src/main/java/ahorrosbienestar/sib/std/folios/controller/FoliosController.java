@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -54,7 +56,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("folios")
 public class FoliosController {
 	
-	private static final Logger logger = Logger.getLogger(FoliosController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(FoliosController.class);
 
 	
 	@Autowired

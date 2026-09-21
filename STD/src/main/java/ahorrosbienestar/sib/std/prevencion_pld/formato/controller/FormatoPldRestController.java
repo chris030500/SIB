@@ -9,7 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +29,8 @@ public class FormatoPldRestController {
 	@Autowired
 	private ConfigService configService;
 
-	private static final Logger logger = Logger.getLogger(FormatoPldRestController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(FormatoPldRestController.class);
 
 	@RequestMapping(value = { "/crear_copia" }, method = RequestMethod.GET)
 	public String copiarFormato() {

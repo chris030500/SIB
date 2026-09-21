@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +35,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("reporteFolio")
 public class ReporteCSOController {
 
-	private static final Logger logger = Logger.getLogger(ReporteCSOController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ReporteCSOController.class);
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	

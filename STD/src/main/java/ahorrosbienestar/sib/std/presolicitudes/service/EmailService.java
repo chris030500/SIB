@@ -7,7 +7,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -19,7 +20,8 @@ import ahorrosbienestar.sib.std.presolicitudes.repository.ConfiguracionCorreoRep
 @Service
 public class EmailService {
 
-    private static final Logger logger = Logger.getLogger(EmailService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private ConfiguracionCorreoRepository configuracionCorreoRepository;

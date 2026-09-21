@@ -2,7 +2,8 @@ package ahorrosbienestar.sib.std.configuracion.controller;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,8 @@ public class ConfiguracionMensajeController {
 	
 	//protected final Log logger = LogFactory.getLog(this.getClass());
 	
-	private static final Logger logger = Logger.getLogger(ConfiguracionMensajeController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ConfiguracionMensajeController.class);
 	
 	//Mostramos el mensaje que valida las fechas
 	@GetMapping("/mensajeValidaFecha")

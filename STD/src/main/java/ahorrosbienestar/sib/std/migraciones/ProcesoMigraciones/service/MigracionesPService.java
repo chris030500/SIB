@@ -4,7 +4,8 @@ package ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.service;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.model.MigracionesP;
 import ahorrosbienestar.sib.std.migraciones.ProcesoMigraciones.repository.MigracionesPRepository;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,8 @@ import java.util.Optional;
 @Service
 public class MigracionesPService {
 	
-	private static final Logger logger = Logger.getLogger(MigracionesPService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(MigracionesPService.class);
 
 	 @Autowired
 	    private MigracionesPRepository migracionesPRepository;

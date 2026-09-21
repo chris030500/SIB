@@ -6,7 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -31,7 +32,8 @@ import ahorrosbienestar.sib.std.ofertasAutomaticas.originacion.dto.OriginacionWs
 @Service
 public class OriginacionConsultaEstatusService {
 
-	private static final Logger logger = Logger.getLogger(OriginacionConsultaEstatusService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(OriginacionConsultaEstatusService.class);
 	private static final String DESCRIPCION_WS_ORIGINACION = "Consulta Estatus Ofertas Campanias";
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 

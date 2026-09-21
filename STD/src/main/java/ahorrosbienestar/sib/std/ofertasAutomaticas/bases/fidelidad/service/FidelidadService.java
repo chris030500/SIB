@@ -6,7 +6,8 @@ import java.util.List;
 
 import jakarta.transaction.Transactional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,7 +21,8 @@ public class FidelidadService {
 	@Autowired
 	private final JdbcTemplate jdbcTemplate;
 	
-	private static final Logger logger = Logger.getLogger(FidelidadService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(FidelidadService.class);
 	
 
 	@Autowired

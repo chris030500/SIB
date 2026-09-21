@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.credito.reporteCampanias.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +33,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @RequestMapping("credito")
 public class ReporteCampaniasController {
 	
-	private static final Logger logger = Logger.getLogger(ReporteCampaniasController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ReporteCampaniasController.class);
 	
 	private static final String controllerReporte = "generarReporte";
 	

@@ -4,7 +4,8 @@ import javax.sql.DataSource;
 
 import jakarta.validation.constraints.NotNull;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,8 @@ import ahorrosbienestar.sib.std.reportesJasper.controller.JasperReportController
 @Service
 public class ReporteContratoService implements IReporteContratoRepository {
 
-    private static final Logger logger = Logger.getLogger(ReporteContratoService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ReporteContratoService.class);
 
     @Autowired
     private DataSource datasource;

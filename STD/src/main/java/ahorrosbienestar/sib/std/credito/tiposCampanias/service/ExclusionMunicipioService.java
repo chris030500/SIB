@@ -1,6 +1,7 @@
 package ahorrosbienestar.sib.std.credito.tiposCampanias.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,8 @@ import org.apache.poi.openxml4j.util.ZipSecureFile;
 @Service
 public class ExclusionMunicipioService {
 	
-	private static final Logger logger = Logger.getLogger(ExclusionMunicipioService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ExclusionMunicipioService.class);
 
 	@Autowired
 	private ExclusionMunicipioRepository exclusionMunicipioRepository;

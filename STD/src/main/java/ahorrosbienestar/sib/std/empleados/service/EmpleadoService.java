@@ -5,7 +5,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,7 +17,8 @@ import ahorrosbienestar.sib.std.empleados.dto.EmpleadoDto;
 public class EmpleadoService {
 
     private JdbcTemplate jdbcTemplate;
-    private static final Logger logger = Logger.getLogger(EmpleadoService.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(EmpleadoService.class);
 
     @Autowired
     public EmpleadoService(JdbcTemplate jdbcTemplate) {
@@ -73,7 +75,7 @@ public class EmpleadoService {
                 }
             });
 
-            logger.info(ls);
+            logger.info("Resultado: {}", ls);
             return ls;
 
         } catch (Exception e) {

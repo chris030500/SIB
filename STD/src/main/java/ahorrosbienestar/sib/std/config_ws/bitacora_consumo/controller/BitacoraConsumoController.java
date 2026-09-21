@@ -6,7 +6,8 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
  
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,8 @@ import ahorrosbienestar.sib.std.usuarios.service.UsuarioService;
 public class BitacoraConsumoController {
  
     //protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(BitacoraConsumoController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(BitacoraConsumoController.class);
 
  
     @Autowired

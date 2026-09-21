@@ -1,7 +1,9 @@
 package ahorrosbienestar.sib.std.prevencion_pld.pld.controller;
 
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,7 +41,8 @@ public class PldController {
 	private static final String rutaError = "errores/error_403";
 	private static String rutaDireccion = "";
 
-	private static final Logger logger = Logger.getLogger(PldController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PldController.class);
 
 	// Método para mostrar la pantalla de Filtrado QEQ
 	@GetMapping("/pld")

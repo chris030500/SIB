@@ -5,7 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -19,7 +20,8 @@ public class PDFServidorService {
 	
 	private IConfiguracionRepository iConfiguracionRepository;
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(PDFServidorService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(PDFServidorService.class);
 	
 	@Autowired
 	public PDFServidorService (IConfiguracionRepository iConfiguracionRepository) {
@@ -39,7 +41,7 @@ public class PDFServidorService {
 				Files.write(path, bytes);
 				logger.info("Archivo guardado");
 			} catch (Exception e) {
-				logger.error(e);
+				logger.error("Ocurrió un error durante el proceso", e);
 				//e.printStackTrace();
 			}
 			

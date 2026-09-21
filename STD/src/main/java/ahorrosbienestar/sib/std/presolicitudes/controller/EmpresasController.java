@@ -12,7 +12,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import jakarta.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,8 @@ public class EmpresasController {
 
 	@Autowired
 	private ConfiguracionCorreoRepository configuracionCorreoRepository;
-	private static final Logger logger = Logger.getLogger(EmpresasController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(EmpresasController.class);
 
 	@Autowired
 	private TaskScheduler taskScheduler;

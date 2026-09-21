@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
  
 import jakarta.validation.Valid;
  
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -59,7 +60,8 @@ public class UsuarioRestController {
     
  
     //protected final Log logger = LogFactory.getLog(this.getClass());
-    private static final Logger logger = Logger.getLogger(UsuarioRestController.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(UsuarioRestController.class);
  
     // Dar de alta usuario utilizando metodo POST
     @PostMapping

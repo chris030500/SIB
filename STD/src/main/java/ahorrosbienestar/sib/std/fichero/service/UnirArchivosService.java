@@ -9,7 +9,8 @@ import java.util.Calendar;
 import java.util.List;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -56,7 +57,8 @@ public class UnirArchivosService {
 	private FirmaDoctoUnificadoService firmaDoctoUnificadoService;
 
 	//protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(UnirArchivosService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(UnirArchivosService.class);
 
 	public String eliminarUltimaPalabra(String s) {
 		int pos;
@@ -263,7 +265,7 @@ public class UnirArchivosService {
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error al unir los archivos");
-			logger.error(e);
+			logger.error("Ocurrió un error durante el proceso", e);
 			//e.printStackTrace();
 			return "Error al unir los archivos.";
 		}

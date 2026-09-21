@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -52,7 +53,8 @@ public class JasperReportController {
 	
 	
     //protected final Log logger = LogFactory.getLog(this.getClass());
-	private static final Logger logger = Logger.getLogger(JasperReportController.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(JasperReportController.class);
 	
 	
 	private static final String jaspersserver_url = "jaspersserver_url";

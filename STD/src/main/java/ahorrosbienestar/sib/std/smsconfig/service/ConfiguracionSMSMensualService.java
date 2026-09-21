@@ -3,7 +3,8 @@ package ahorrosbienestar.sib.std.smsconfig.service;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Service
 public class ConfiguracionSMSMensualService {
 	
-	private static final Logger logger = Logger.getLogger(ConfiguracionSMSMensualService.class);
+	private static final Logger logger =
+	        LoggerFactory.getLogger(ConfiguracionSMSMensualService.class);
 	
 	@Autowired
 	private IConfiguracionSMSMensualRepository confMensualRepository;
