@@ -26,7 +26,6 @@ public class SolicitudEnvioController {
 	
 	@GetMapping("solicitudEnvio/verSolicitud/{solicitudEnvio}")
 	public String verSolicitud(Model model, @PathVariable Integer solicitudEnvio) {
-		System.out.println("solicitudEnvio: " +solicitudEnvio);
 		SolicitudEnvio solicitud = new SolicitudEnvio();
 		
 		Optional<SolicitudEnvio> optionalSolicitudEnvio = solicitudEnvioService.findById(solicitudEnvio);

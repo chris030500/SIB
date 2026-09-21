@@ -323,7 +323,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 	}
 
@@ -350,7 +350,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 
 	}
@@ -401,7 +401,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 
 	}
@@ -442,7 +442,7 @@ public class CampaniasTemporalesController {
 			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_DATOS_CAM_TEMPORALES, e);
-			return e.getMessage();
+			return "Error interno al procesar la solicitud.";
 		}
 
 	}
@@ -464,7 +464,7 @@ public class CampaniasTemporalesController {
 			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_RELACION_CAM_OA, e);
-			return e.getMessage();
+			return "Error interno al procesar la solicitud.";
 		}
 		
 	}

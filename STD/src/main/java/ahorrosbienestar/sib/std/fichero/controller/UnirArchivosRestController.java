@@ -244,7 +244,7 @@ public class UnirArchivosRestController {
 			logger.error("Error al unir los archivos");
 			logger.error(e);
 			//Error: " + e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 			// e.printStackTrace();
 		}
 

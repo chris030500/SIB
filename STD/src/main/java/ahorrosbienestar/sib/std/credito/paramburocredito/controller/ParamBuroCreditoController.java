@@ -161,7 +161,6 @@ public class ParamBuroCreditoController {
 		
 		try {
 			 String concatenado = String.join(",", paramBC.getRiesgoMaximo());
-			 System.out.println("" + paramBC.getIdRegistroParam());
 
 			    Optional<TiposCampaniasModel> campaniaConsulta = 
 			        tiposCampaniasService.obtenerCampaniaxID(paramBC.getIdCampaniaSeleccionada());
@@ -205,7 +204,7 @@ public class ParamBuroCreditoController {
 
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error: " + e.getMessage());
+					.body("Error: ");
 			
 		}
 		

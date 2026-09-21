@@ -207,7 +207,7 @@ public class ExclusionesBasesNominaController {
 		} catch (Exception e) {
 			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-	        response.put(Constantes.MENSAJE_DE_ERROR, e.getMessage());
+	        response.put(Constantes.MENSAJE_DE_ERROR, "Error interno al procesar la solicitud.");
 	        
 	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -314,7 +314,7 @@ public class ExclusionesBasesNominaController {
 		} catch(Exception e) {
 			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-	        response.put(Constantes.MENSAJE_DE_ERROR, e.getMessage());
+	        response.put(Constantes.MENSAJE_DE_ERROR, "Error interno al procesar la solicitud.");
 	        
 	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -417,7 +417,7 @@ public class ExclusionesBasesNominaController {
 		} catch (Exception e) {
 			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-	        response.put(Constantes.MENSAJE_DE_ERROR, e.getMessage());
+	        response.put(Constantes.MENSAJE_DE_ERROR, "Error interno al procesar la solicitud.");
 	        
 	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -519,7 +519,7 @@ public class ExclusionesBasesNominaController {
 		} catch (Exception e) {
 			
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-	        response.put(Constantes.MENSAJE_DE_ERROR, e.getMessage());
+	        response.put(Constantes.MENSAJE_DE_ERROR, "Error interno al procesar la solicitud.");
 	        
 	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}

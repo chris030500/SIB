@@ -44,7 +44,6 @@ private HistContrasenaService histContrasenaService;
 	@PostMapping
 	public ResponseEntity<?> save(@RequestBody HistContrasena histContrasena,@RequestParam("contra")  String contra) throws IOException{
 		HistContrasena contrasena = new HistContrasena();
-		System.out.println("Ejecutando guardar historico");
 //		Properties properties = new Properties();
 //		InputStream inputStream = new FileInputStream("src/main/resources/contrasena.properties");
 //		properties.load(inputStream);

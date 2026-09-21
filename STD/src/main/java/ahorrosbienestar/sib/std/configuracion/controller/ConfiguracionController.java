@@ -203,7 +203,6 @@ public class ConfiguracionController {
 			acceso.setVc_usuario(usu.getVc_nombre_usuario());
 			//Guardanto los valores de acceso en la base de datos
 			accesoService.save(acceso);
-			System.out.println("Cuenta Desbloqueada registrado en bitacora correctamente");
 		}
 		return "redirect:/configuracion/sesionesInactiva";
 	}

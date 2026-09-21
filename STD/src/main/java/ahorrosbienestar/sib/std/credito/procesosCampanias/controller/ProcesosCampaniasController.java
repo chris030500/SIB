@@ -174,7 +174,7 @@ public class ProcesosCampaniasController {
 		        respuesta.put("lista", lista);
 		        return ResponseEntity.ok(respuesta);
 		    } catch (Exception e) {
-		        respuesta.put("error", e.getMessage());
+		        respuesta.put("error", "Error interno al procesar la solicitud.");
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		    }
 		}

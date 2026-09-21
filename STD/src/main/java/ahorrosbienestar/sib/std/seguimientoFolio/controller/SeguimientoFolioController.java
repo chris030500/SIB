@@ -164,7 +164,7 @@ public class SeguimientoFolioController {
 
 	    } catch (Exception e) {
 	        logger.error("error:" + e.getMessage(), e);
-	        return ResponseEntity.badRequest().body(e.getMessage());
+	        return ResponseEntity.badRequest().body("Error interno al procesar la solicitud.");
 	    }
 	}
 	/**
@@ -448,7 +448,7 @@ public class SeguimientoFolioController {
 
 	    } catch (Exception e) {
 	        logger.error("error:" + e.getMessage(), e);
-	        return ResponseEntity.badRequest().body(e.getMessage());
+	        return ResponseEntity.badRequest().body("Error interno al procesar la solicitud.");
 	    }
 	}
 	

@@ -168,7 +168,7 @@ public class PresolicitudesController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error: " + e.getMessage(), e);
-            respuesta.put("error", "Error: " + e.getMessage());
+            respuesta.put("error", "Error: ");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
         }
     }
@@ -248,7 +248,7 @@ public class PresolicitudesController {
         } catch (Exception e) {
             logger.error("Error al crear la solicitud de crédito: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al crear la solicitud de crédito: " + e.getMessage());
+                    .body("Error al crear la solicitud de crédito: ");
         }
     }
 
@@ -278,7 +278,7 @@ public class PresolicitudesController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al actualizar la solicitud: " + e.getMessage());
+                    .body("Error al actualizar la solicitud: ");
         }
     }
 
@@ -322,7 +322,7 @@ public class PresolicitudesController {
         } catch (Exception e) {
             logger.error("Error en listarSolicitudes: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al listar solicitudes: " + e.getMessage());
+                    .body("Error al listar solicitudes: ");
         }
     }
 
@@ -471,7 +471,7 @@ public class PresolicitudesController {
         } catch (Exception e) {
             logger.error("[ERROR] Excepción capturada: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al procesar el archivo: " + e.getMessage());
+                    .body("Error al procesar el archivo: ");
         }
     }
 
@@ -530,7 +530,7 @@ public class PresolicitudesController {
             return ResponseEntity.ok("Correo enviado correctamente.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al enviar correo: " + e.getMessage());
+                    .body("Error al enviar correo: ");
         }
     }
 

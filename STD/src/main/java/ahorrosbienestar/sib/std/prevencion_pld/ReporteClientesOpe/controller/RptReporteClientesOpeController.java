@@ -157,7 +157,7 @@ public class RptReporteClientesOpeController {
  
         } catch (Exception e) {
             resp.put("tipo", "error");
-            resp.put("mensaje", e.getMessage());
+            resp.put("mensaje", "Error interno al procesar la solicitud.");
  
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -450,7 +450,7 @@ public class RptReporteClientesOpeController {
  
         } catch (SQLException e) {
             logger.error("❌ Error al ejecutar SP: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error SQL: " + e.getMessage());
+            respuesta.put("mensaje", "Error SQL: ");
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
  
@@ -555,7 +555,7 @@ public class RptReporteClientesOpeController {
 
             logger.error("Error al ejecutar SP visto bueno", e);
 
-            respuesta.put("mensaje", "Error: " + e.getMessage());
+            respuesta.put("mensaje", "Error: ");
             respuesta.put("tipo", "error");
 
             return ResponseEntity.ok(respuesta);
@@ -613,7 +613,7 @@ public class RptReporteClientesOpeController {
             migracionesPService.finalizarMigracion(id, userDetails.getUsername());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error interno al procesar la solicitud.");
         }
     }
  
@@ -816,7 +816,7 @@ public class RptReporteClientesOpeController {
         } catch (Exception e) {
             logger.error("❌ Error al ejecutar visto bueno por proceso", e);
             respuesta.put("tipo", "error");
-            respuesta.put("mensaje", e.getMessage());
+            respuesta.put("mensaje", "Error interno al procesar la solicitud.");
             return ResponseEntity.ok(respuesta);
 
         } finally {
@@ -855,7 +855,7 @@ public class RptReporteClientesOpeController {
         } catch (Exception e) {
             logger.error("Error al registrar visto bueno.", e);
             resp.put("tipo", "error");
-            resp.put("mensaje", e.getMessage());
+            resp.put("mensaje", "Error interno al procesar la solicitud.");
             return ResponseEntity.badRequest().body(resp);
         }
     }
@@ -881,7 +881,7 @@ public class RptReporteClientesOpeController {
         } catch (Exception e) {
             logger.error("Error al pre-registrar historial.", e);
             resp.put("tipo", "error");
-            resp.put("mensaje", e.getMessage());
+            resp.put("mensaje", "Error interno al procesar la solicitud.");
             return ResponseEntity.badRequest().body(resp);
         }
     }
@@ -912,7 +912,7 @@ public class RptReporteClientesOpeController {
  
         } catch (SQLException e) {
             logger.error("Error al ejecutar SP procesarAuditoriaClientes: " + e.getMessage(), e);
-            respuesta.put("mensaje", "Error al procesar auditoría: " + e.getMessage());
+            respuesta.put("mensaje", "Error al procesar auditoría: ");
             respuesta.put("tipo", "error");
             return ResponseEntity.ok(respuesta);
  

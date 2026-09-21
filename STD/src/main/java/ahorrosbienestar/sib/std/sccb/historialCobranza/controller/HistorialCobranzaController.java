@@ -188,7 +188,7 @@ public class HistorialCobranzaController {
 
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage(), e);
-			res.put(Constantes.MENSAJE_ERROR, Constantes.MENSAJE_DE_ERROR + e.getMessage());
+			res.put(Constantes.MENSAJE_ERROR, Constantes.MENSAJE_DE_ERROR + "Error interno al procesar la solicitud.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
 		}
 	}

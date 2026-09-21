@@ -63,7 +63,7 @@ public class CargaDocumentosController {
 			return ResponseEntity.ok(Integer.parseInt(dias));
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 
 	}

@@ -107,7 +107,7 @@ public class ProductoController {
 			return "productos/index";
 		} catch (Exception e) {
 			Log.error("Vista Productos:" + e.getMessage());
-			System.out.println("Error:" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}
@@ -120,7 +120,7 @@ public class ProductoController {
 
 			return "redirect:/producto/index";
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}
@@ -134,7 +134,7 @@ public class ProductoController {
 
 			return "redirect:/producto/index";
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}
@@ -198,8 +198,6 @@ public class ProductoController {
 	public Optional<Producto> loadEditarProducto(@PathVariable("id") Integer id) {
 		Log.info("Ejecutando loadEditarProducto");
 		// logger.info("Ejecutando loadEditarProducto");
-		System.out.println("Entro en loadEditarProducto");
-		System.out.println("productoService.findById(id) " + productoService.findById(id));
 		return productoService.findById(id);
 	}
 
@@ -219,7 +217,7 @@ public class ProductoController {
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			// TODO: handle exception
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 			mensaje = "Ocurrio un error al editar el producto. Intente mas tarde.";
 			respuesta.add(mensaje);
 		}
@@ -253,7 +251,7 @@ public class ProductoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 			mensaje = "Ocurrio un error. Intente mas tarde.";
 			respuesta.add(mensaje);
 		}
@@ -268,7 +266,7 @@ public class ProductoController {
 			return ResponseEntity.ok(solicitudDatos);
 
 		} catch (Exception e) {
-			System.out.print("--" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}
@@ -328,7 +326,7 @@ public class ProductoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 			mensaje = "Ocurrio un error. Intente mas tarde.";
 			respuesta.add(mensaje);
 		}
@@ -348,7 +346,7 @@ public class ProductoController {
 			respuesta.add(mensaje);
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 			mensaje = "Ocurrio un error. Intente mas tarde.";
 			respuesta.add(mensaje);
 		}
@@ -362,7 +360,7 @@ public class ProductoController {
 			model.addAttribute("producto", productoService.findAll());
 			return "productos/index_val";
 		} catch (Exception e) {
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 
@@ -376,7 +374,7 @@ public class ProductoController {
 			return ResponseEntity.ok(p);
 		} catch (Exception e) {
 
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 
@@ -396,7 +394,7 @@ public class ProductoController {
 			return ResponseEntity.notFound().build();
 		} catch (Exception e) {
 
-			System.out.println("" + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 

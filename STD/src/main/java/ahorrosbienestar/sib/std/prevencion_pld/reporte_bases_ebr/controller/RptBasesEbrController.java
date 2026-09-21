@@ -168,7 +168,7 @@ public class RptBasesEbrController {
 			}
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_DE_ERROR + e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BasesEbrResponse<>(Constantes.MENSAJE_DE_ERROR + e.getMessage(), null));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BasesEbrResponse<>(Constantes.MENSAJE_DE_ERROR + "Error interno al procesar la solicitud.", null));
 		}
     }
     
@@ -207,7 +207,7 @@ public class RptBasesEbrController {
 		} catch (Exception e) {
 			logger.error("Error al generar reporte Bases EBR: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BasesEbrResponse<>(e.getMessage(), null));
+                    .body(new BasesEbrResponse<>("Error interno al procesar la solicitud.", null));
 		}
 	}
 	
@@ -246,7 +246,7 @@ public class RptBasesEbrController {
 		} catch (Exception e) {
 			logger.error("Error al generar reporte Histórico Bases EBR: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new BasesEbrResponse<>(e.getMessage(), null));
+                    .body(new BasesEbrResponse<>("Error interno al procesar la solicitud.", null));
 		}
 	}
 

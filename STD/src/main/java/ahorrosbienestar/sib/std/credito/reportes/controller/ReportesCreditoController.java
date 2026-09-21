@@ -145,7 +145,7 @@ public class ReportesCreditoController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(Collections.singletonList("Error al generar el reporte: " + e.getMessage()));
+	                .body(Collections.singletonList("Error al generar el reporte: "));
 		}
 	}
 

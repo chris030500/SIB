@@ -260,7 +260,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	    } catch (Exception e) {
 
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear proceso: " + e.getMessage());
+	            .body("Error al crear proceso: ");
 	    }
 	}*/
 	@PostMapping("/api/crearExt")
@@ -277,7 +277,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
         	logger.error("Error al crear" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al crear proceso: " + e.getMessage());
+                                 .body("Error al crear proceso: ");
         }
     }
 	
@@ -292,9 +292,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Parametro cron no encontrada o sin cambios");
 	        }
 	    } catch (Exception e) {
-	        // Log the error here to get more information about what went wrong
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar el parametro: " + e.getMessage());
+	        logger.error("Error al actualizar el parámetro de extracción de campañas.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Ocurrió un error al actualizar el parámetro.");
 	    }
 	}
 	
@@ -311,7 +311,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	    } catch (Exception e) {
 	    	
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear el historico del proceso: " + e.getMessage());
+	            .body("Error al crear el historico del proceso: ");
 	    }
 	}
 	
@@ -329,7 +329,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	    } catch (Exception e) {
 	    	
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear datos Tipo Buro de Credito: " + e.getMessage());
+	            .body("Error al crear datos Tipo Buro de Credito: ");
 	    }
 	}*/
 	//inserta todo el array
@@ -340,7 +340,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	        return ResponseEntity.ok("Se guardaron " + buroCreditos.size() + " registros de Buro de Credito correctamente");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear datos Tipo Buro de Credito: " + e.getMessage());
+	            .body("Error al crear datos Tipo Buro de Credito: ");
 	    }
 	}
 	
@@ -420,7 +420,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 		        respuesta.put("lista", lista);
 		        return ResponseEntity.ok(respuesta);
 		    } catch (Exception e) {
-		        respuesta.put("error", e.getMessage());
+		        respuesta.put("error", "Error interno al procesar la solicitud.");
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		    }
 		}
@@ -471,9 +471,9 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Proceso campania no encontrada o sin cambios");
 	        }
 	    } catch (Exception e) {
-	        // Log the error here to get more information about what went wrong
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar el proceso campania: " + e.getMessage());
+	        logger.error("Error al actualizar el proceso de campaña.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("Ocurrió un error al actualizar el proceso de campaña.");
 	    }
 	}
 	
@@ -491,7 +491,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
         	logger.error("Error al crear" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Error al crear proceso de extraccion de carga buro: " + e.getMessage());
+                                 .body("Error al crear proceso de extraccion de carga buro: ");
         }
     }
 	
@@ -520,7 +520,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 
 	        return ResponseEntity.ok(lista);
 	    } catch (Exception e) {
-	        e.printStackTrace(); // 
+	        logger.error("Error al consultar el catálogo de tipos de buró.");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
@@ -539,7 +539,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
             return ResponseEntity.ok("Procedimiento ejecutado correctamente depuracion buro");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ejecutar el procedimiento depuracion buro: " + e.getMessage());
+                    .body("Error al ejecutar el procedimiento depuracion buro: ");
         }
     }
     
@@ -579,7 +579,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
             return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ejecutar el procedimiento archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED: " + e.getMessage());
+                    .body("Error al ejecutar el procedimiento archivo MC SP_DEP_CAM_EXTRACCIONCAMPCRED: ");
         }
     }
     
@@ -594,7 +594,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
             return ResponseEntity.ok("Procedimiento ejecutado correctamente archivo MC SP_CAM_CANCELAR_PROCESO");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: " + e.getMessage());
+                    .body("Error al ejecutar el procedimiento archivo MC SP_CAM_CANCELAR_PROCESO: ");
         }
     }
     
@@ -621,7 +621,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
         } catch (Exception e) {
         	logger.error("Error al ejecutar el procedimiento WS Estatus Campanias: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al ejecutar el procedimiento WS Estatus Campanias: " + e.getMessage());
+                    .body("Error al ejecutar el procedimiento WS Estatus Campanias: ");
         }
     }
     
@@ -639,7 +639,7 @@ private static final Logger logger = Logger.getLogger(ExtraccionCampaniasControl
 	        return ResponseEntity.ok("Se guardaron " + vigecniaBuro.size() + " registros de Vigencia Buro de Credito correctamente");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear datos Vigencia Tipo Buro de Credito: " + e.getMessage());
+	            .body("Error al crear datos Vigencia Tipo Buro de Credito: ");
 	    }
 	}
 	

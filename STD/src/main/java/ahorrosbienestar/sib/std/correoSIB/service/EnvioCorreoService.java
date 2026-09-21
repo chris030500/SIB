@@ -100,7 +100,7 @@ public class EnvioCorreoService {
 			mailSender.send(message);
 		} catch (MessagingException e) {
 			logger.info("Error:"+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		
 	}

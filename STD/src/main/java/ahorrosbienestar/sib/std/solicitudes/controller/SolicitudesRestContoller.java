@@ -1,5 +1,6 @@
 package ahorrosbienestar.sib.std.solicitudes.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import ahorrosbienestar.sib.std.solicitudes.service.SolicitudEnvioService;
 @RestController
 @RequestMapping("/solicitudes")
 public class SolicitudesRestContoller {
+
+	private static final Logger logger = Logger.getLogger(SolicitudesRestContoller.class);
 	
 	private SolicitudEnvioService solicitudEnvioService;
 
@@ -27,7 +30,7 @@ public class SolicitudesRestContoller {
 
 			return ResponseEntity.ok(solicitudEnvioService.findBySolicitud(solicitud));
 		} catch (Exception e) {
-			System.out.print("--"+e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}
@@ -37,7 +40,7 @@ public class SolicitudesRestContoller {
 
 			return ResponseEntity.ok(solicitudEnvioService.findByRangoFechas(fechaInicio,fechaFin));
 		} catch (Exception e) {
-			System.out.print("--"+e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 	}

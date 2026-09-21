@@ -128,7 +128,7 @@ public class RolController {
 				}
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.println(""+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 			}
 			return null;
 		}
@@ -143,7 +143,7 @@ public class RolController {
 					respuesta.add(mensaje);
 				}
 			} catch (Exception e) {
-				System.out.println(""+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = e.getMessage();
 				respuesta.add(mensaje);
 			}
@@ -162,7 +162,7 @@ public class RolController {
 				}			
 				
 			} catch (Exception e) {
-				System.out.println(""+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = e.getMessage();
 				respuesta.add(mensaje);
 			}
@@ -240,7 +240,7 @@ public class RolController {
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.println("" + e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un error. Intente mas tarde.";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
@@ -254,7 +254,7 @@ public class RolController {
 				return ResponseEntity.ok(solicitudDatos);
 
 			} catch (Exception e) {
-				System.out.print("--" + e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 			}
 			return null;
 		}
@@ -323,7 +323,7 @@ public class RolController {
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.println("" + e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un error. Intente mas tarde.";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
@@ -350,7 +350,7 @@ public class RolController {
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.println("" + e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un error. Intente mas tarde.";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);

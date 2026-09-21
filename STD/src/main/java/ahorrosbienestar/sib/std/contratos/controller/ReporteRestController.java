@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,8 @@ import groovyjarjarpicocli.CommandLine.Model;
 @RestController
 @RequestMapping("/contrato/report")
 public class ReporteRestController {
+
+	private static final Logger logger = Logger.getLogger(ReporteRestController.class);
 	
 	@Autowired
 	private IReporteContratoRepository iReporteContratoRepository;
@@ -50,7 +53,7 @@ public class ReporteRestController {
 			
 	        return coreBancarioService.validaSolicitud(solicitud);
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
 
@@ -62,7 +65,7 @@ public class ReporteRestController {
 			
 	        return coreBancarioService.traeParticipantes(solicitud);
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
     }
@@ -72,7 +75,7 @@ public class ReporteRestController {
 		try {		
 	        return this.iReporteContratoRepository.export(id,solicitud);
 		} catch (Exception e) {
-			System.out.print(""+e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 		return null;
     }

@@ -114,7 +114,6 @@ public class EmpresaService {
 
         long diasDesdeUltima = ahora.toLocalDate().toEpochDay() - empresa.getFecha().toLocalDate().toEpochDay();
         
-        System.out.print("FRECUENCIA: " + empresa.getFrecuencia());
         
         switch (empresa.getFrecuencia()) {
             case 1:

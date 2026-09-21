@@ -223,8 +223,8 @@ public class indexOfertasAutoController {
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
     }
  
@@ -255,8 +255,8 @@ public class indexOfertasAutoController {
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
     }
  
@@ -333,8 +333,8 @@ public class indexOfertasAutoController {
  
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
  
     }
@@ -466,7 +466,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -550,7 +550,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -609,7 +609,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -643,7 +643,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -676,7 +676,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -799,7 +799,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -871,7 +871,7 @@ public class indexOfertasAutoController {
         } catch (Exception e) {
             logger.error("Error al listar archivos: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al listar archivos: " + e.getMessage());
+                    .body("Error al listar archivos: ");
         }
     }
     
@@ -1059,7 +1059,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -1134,7 +1134,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error:");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
             return ResponseEntity.ok(respuesta);
@@ -1199,7 +1199,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             respuesta.put(Constantes.URL_REPORTE,null);
             return ResponseEntity.ok(respuesta);
