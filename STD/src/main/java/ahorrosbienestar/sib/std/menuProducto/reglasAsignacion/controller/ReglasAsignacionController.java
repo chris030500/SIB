@@ -136,7 +136,7 @@ public class ReglasAsignacionController {
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
@@ -208,7 +208,7 @@ public class ReglasAsignacionController {
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
@@ -269,7 +269,7 @@ public class ReglasAsignacionController {
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}

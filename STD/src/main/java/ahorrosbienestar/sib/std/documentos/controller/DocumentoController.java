@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,8 @@ import ahorrosbienestar.sib.std.usuarios.repository.IUsuarioRepository;
 @Controller
 @RequestMapping("documento")
 public class DocumentoController {
+
+	private static final Logger logger = Logger.getLogger(DocumentoController.class);
 
 	private DocumentoService documentoService;
 	
@@ -102,7 +105,7 @@ public class DocumentoController {
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.print("--"+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un Error, intente mas tarde";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
@@ -118,7 +121,7 @@ public class DocumentoController {
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
-				System.out.print("--"+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un Error, intente mas tarde";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);
@@ -144,7 +147,7 @@ public class DocumentoController {
 				return ResponseEntity.ok(respuesta);
 			
 			} catch (Exception e) {
-				System.out.print("--"+e.getMessage());
+				logger.error("Error inesperado durante la operación.", e);
 				mensaje = "Ocurrio un Error, intente mas tarde";
 				respuesta.add(mensaje);
 				return ResponseEntity.ok(respuesta);

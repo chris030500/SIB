@@ -323,7 +323,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 	}
 
@@ -350,7 +350,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 
 	}
@@ -370,10 +370,8 @@ public class CampaniasTemporalesController {
 		String mensaje = "";
 		String tipo = "";
 		Map<String, Object> respuesta = new HashMap<>();
-		try {
-
-			Connection connection = jdbcTemplate.getDataSource().getConnection();
-			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_CALCULO_CAM_TEMPORALES);
+		try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+				CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_CALCULO_CAM_TEMPORALES)) {
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setString(2, fechaInicio); // campaniaID
@@ -403,7 +401,7 @@ public class CampaniasTemporalesController {
 		} catch (Exception e) {
 			logger.error(Constantes.MENSAJE_LOGGER_ERROR + e.getMessage());
 
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: ");
 		}
 
 	}
@@ -426,10 +424,8 @@ public class CampaniasTemporalesController {
 
 		// la variable tipo de proceso, permite identificar si se gnera un proceso o se
 		// relaciona los registros al proceso ya creado valores 1 o 2
-		try {
-
-			Connection connection = jdbcTemplate.getDataSource().getConnection();
-			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_DATOS_CAM_TEMPORALES);
+		try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+				CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_DATOS_CAM_TEMPORALES)) {
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setInt(2, campaniaID); // campaniaID
@@ -446,7 +442,7 @@ public class CampaniasTemporalesController {
 			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_DATOS_CAM_TEMPORALES, e);
-			return e.getMessage();
+			return "Error interno al procesar la solicitud.";
 		}
 
 	}
@@ -455,10 +451,8 @@ public class CampaniasTemporalesController {
 
 		//insertar la base y la clasificacion
 
-		try {
-
-			Connection connection = jdbcTemplate.getDataSource().getConnection();
-			CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_RELACION_CAM_OA);
+		try (Connection connection = jdbcTemplate.getDataSource().getConnection();
+				CallableStatement callableStatement = connection.prepareCall(Constantes.PROCESO_RELACION_CAM_OA)) {
 
 			callableStatement.registerOutParameter(1, Types.VARCHAR); // OUT error_message
 			callableStatement.setString(2, nomCampania); // nomCampania
@@ -470,7 +464,7 @@ public class CampaniasTemporalesController {
 			return callableStatement.getString(1);
 		} catch (Exception e) {
 			logger.error("Error al ejecutar"+Constantes.PROCESO_RELACION_CAM_OA, e);
-			return e.getMessage();
+			return "Error interno al procesar la solicitud.";
 		}
 		
 	}

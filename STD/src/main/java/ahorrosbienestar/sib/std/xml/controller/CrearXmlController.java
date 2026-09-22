@@ -367,10 +367,10 @@ public class CrearXmlController {
 						return ResponseEntity.ok("1");
 					} catch (ParserConfigurationException pce) {
 						// pce.printStackTrace();
-						return ResponseEntity.ok(pce.getMessage());
+						return ResponseEntity.ok("Error interno al procesar la solicitud.");
 					} catch (TransformerException tfe) {
 						// tfe.printStackTrace();
-						return ResponseEntity.ok(tfe.getMessage());
+						return ResponseEntity.ok("Error interno al procesar la solicitud.");
 					}
 				}
 

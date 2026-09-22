@@ -46,7 +46,6 @@ public class NotificacionService {
         // Obtener la expresión CRON desde la base de datos
         String cronExpresion = obtenerCronDesdeBD();
 
-        System.out.println("Expresión CRON configurada: " + cronExpresion);
 
         Runnable tarea = this::enviarNotificaciones;
 

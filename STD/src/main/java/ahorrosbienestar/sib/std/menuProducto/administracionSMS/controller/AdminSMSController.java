@@ -211,8 +211,6 @@ public class AdminSMSController {
 			server = conf11.getConfiguracion();
 			InetAddress inetAddress = InetAddress.getLocalHost();
             String ipAddress = inetAddress.getHostAddress();
-            System.out.println("La IP del servidor es: " + ipAddress);
-            System.out.println("La IP del servidor es: " + request.getServerName());
 
 			Parametros parametros = new Parametros();
 			parametros.setMail(conf9.getConfiguracion());
@@ -222,7 +220,6 @@ public class AdminSMSController {
 			parametros.setRespuesta("http://" + ipAddress + ":" + request.getServerPort() + "/STD/api/respuestaSMS");
 			parametros.setProceso(procesoId);
 			
-			System.out.println("La IP del servidor es: " + parametros.getRespuesta());
 			
 			// Configurar encabezados
 			HttpHeaders headers = new HttpHeaders();
@@ -289,7 +286,6 @@ public class AdminSMSController {
     public ResponseEntity<String> receiveSoapResponse(@RequestBody String response) {
         try {
             // Aquí puedes procesar la respuesta recibida
-            System.out.println("Respuesta SOAP recibida: " + response);
             
             // Realizar cualquier acción adicional según la respuesta recibida
             // Por ejemplo, actualizar el estado de la base de datos, enviar notificaciones, etc.

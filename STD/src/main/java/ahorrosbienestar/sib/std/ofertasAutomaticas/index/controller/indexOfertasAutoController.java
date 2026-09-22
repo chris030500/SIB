@@ -166,6 +166,10 @@ public class indexOfertasAutoController {
         if (principal instanceof UserDetails) {
             userDetails = (UserDetails) principal;
         }
+
+        if (userDetails == null) {
+            return Constantes.RUTA_ERROR;
+        }
         
         if(validarAcceso(userDetails.getUsername())== 1){
             Configuracion mensajeCampana = configService.valorPropiedad(Constantes.MENSAJE_CAMPANA_VIP);
@@ -219,8 +223,8 @@ public class indexOfertasAutoController {
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
     }
  
@@ -251,8 +255,8 @@ public class indexOfertasAutoController {
             return "redirect:/ofertasAutomaticas/index";
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
     }
  
@@ -272,6 +276,9 @@ public class indexOfertasAutoController {
             LocalDateTime localDateTime = LocalDateTime.now();
  
             Optional<Bases> tipoBase = basesService.findById(base);
+            if (!tipoBase.isPresent()) {
+                return "La base seleccionada no es válida.";
+            }
  
             // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd
             // HH:mm:ss");
@@ -287,9 +294,9 @@ public class indexOfertasAutoController {
             if (id != null) {
                 logger.info("Entro en id!=null");
                 Optional<ClasificacionBases> clasificacionExistente = clasificacionBasesService.findById(id);
-                logger.info("clasificacionExistente: " + clasificacionExistente.get().getPk_id_clasificacion());
                 if (clasificacionExistente.isPresent()) {
                     ClasificacionBases clasificacionBases = clasificacionExistente.get();
+                    logger.info("clasificacionExistente: " + clasificacionBases.getPk_id_clasificacion());
                     clasificacionBases.setVc_nombre_clasificacion(nomClasificacion.toUpperCase());
                     clasificacionBases.setVc_abreviacion_clasificacion(abrevacion.toUpperCase());
                     clasificacionBases.setVc_codigo_clasificacion(codigoClasificacion.toUpperCase());
@@ -326,8 +333,8 @@ public class indexOfertasAutoController {
  
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            e.printStackTrace();
-            return e.getMessage();
+            logger.error("Error inesperado durante la operación.", e);
+            return "Error interno al procesar la solicitud.";
         }
  
     }
@@ -459,7 +466,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -543,7 +550,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -602,7 +609,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -636,7 +643,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -669,7 +676,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -792,7 +799,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error(Constantes.MENSAJE_DE_ERROR+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -864,7 +871,7 @@ public class indexOfertasAutoController {
         } catch (Exception e) {
             logger.error("Error al listar archivos: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al listar archivos: " + e.getMessage());
+                    .body("Error al listar archivos: ");
         }
     }
     
@@ -922,6 +929,10 @@ public class indexOfertasAutoController {
         ArrayList<String> respuesta = new ArrayList<String>();
         Optional<Bases> bases = basesService.findById(idBase);
         try {
+            if (!bases.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No existe la base con idBase: " + idBase);
+            }
             if(files.length > 0) {
                 for(MultipartFile file: files) {
                      byte[] bytes = file.getBytes();
@@ -1048,7 +1059,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             return ResponseEntity.ok(respuesta);
         }
@@ -1123,7 +1134,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,"Error:"+e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error:");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             respuesta.put(Constantes.NO_ENVIA_CORREO_ASIGNACION, envio);
             return ResponseEntity.ok(respuesta);
@@ -1188,7 +1199,7 @@ public class indexOfertasAutoController {
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             logger.error("Error:"+e.getMessage());
-            respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+            respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
             respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
             respuesta.put(Constantes.URL_REPORTE,null);
             return ResponseEntity.ok(respuesta);

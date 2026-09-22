@@ -282,8 +282,8 @@ public class tiposCampaniasController {
 	        }
 	    } catch (Exception e) {
 	        // Log the error here to get more information about what went wrong
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar la campaña: " + e.getMessage());
+	        logger.error("Error inesperado durante la operación.", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar la campaña: ");
 	    }
 	}
 	
@@ -294,7 +294,7 @@ public class tiposCampaniasController {
 		    ParamBuroCreditoModel registroParamBC = 
 			        paramBuroCreditoService.obtParamBuro(idCamapania);
 		    
-		    if(registroParamBC.getTipoEvaluacion() != tipoBuro) {
+		    if(!java.util.Objects.equals(registroParamBC.getTipoEvaluacion(), tipoBuro)) {
 		    	paramBuroCreditoService.inactivarBC(idCamapania);		    
 		    }
 
@@ -312,7 +312,7 @@ public class tiposCampaniasController {
 	        return ResponseEntity.ok("Campaña creada correctamente");
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear campaña: " + e.getMessage());
+	            .body("Error al crear campaña: ");
 	    }
 	}*/
 	@PostMapping("/api/crear")
@@ -351,7 +351,7 @@ public class tiposCampaniasController {
 	    } catch (Exception e) {
 	    	//System.out.print("Error al crear campaña:::: " + e.getMessage());
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear campaña: " + e.getMessage());
+	            .body("Error al crear campaña: ");
 	    }
 	}
 	
@@ -368,7 +368,7 @@ public class tiposCampaniasController {
 	    } catch (Exception e) {
 	    	
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear el historico campaña: " + e.getMessage());
+	            .body("Error al crear el historico campaña: ");
 	    }
 	}
 	

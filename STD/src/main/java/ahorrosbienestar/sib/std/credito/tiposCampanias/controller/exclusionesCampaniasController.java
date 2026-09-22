@@ -125,12 +125,12 @@ public class exclusionesCampaniasController {
         /*} catch (Exception e) {
         	logger.info("Error al procesar el archivo: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al procesar el archivo: " + e.getMessage());
+                    .body("Error al procesar el archivo: ");
         }*/
         } catch (Exception e) {
            logger.error("Error al procesar el archivo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error al procesar el archivo: " + e.getMessage());
+                    .body("Error al procesar el archivo: ");
         }
         //}catch (Exception e) {
           //  e.printStackTrace(); // <-- IMPORTANTE
@@ -210,8 +210,8 @@ public class exclusionesCampaniasController {
 	        }
 	    } catch (Exception e) {
 	        // Log the error here to get more information about what went wrong
-	        e.printStackTrace();
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar cliente: " + e.getMessage());
+	        logger.error("Error inesperado durante la operación.", e);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al mostrar cliente: ");
 	    }
 	}
     
@@ -228,7 +228,7 @@ public class exclusionesCampaniasController {
 	    } catch (Exception e) {
 	    	
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	            .body("Error al crear el historico de exclusion cliente: " + e.getMessage());
+	            .body("Error al crear el historico de exclusion cliente: ");
 	    }
 	}
     

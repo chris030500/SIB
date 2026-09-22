@@ -68,8 +68,6 @@ public class DoctoUnificadoController {
 				logger.info("Tiene información");
 //				String validacionPDF = archivosPdfXml.get().getVc_ruta_archivo_pdf();
 //				String validacionXML = archivosPdfXml.get().getVc_ruta_archivo_xml();
-				System.out.println("archivoPdf: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf());
-				System.out.println("archivoXML: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_xml());
 				logger.info("archivoPdf: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf());
 				logger.info("archivoXML: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_xml());
 				String archivoPdf = UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf();
@@ -80,9 +78,7 @@ public class DoctoUnificadoController {
 				int banderaArchivos = 0;
 				while (true) {
 					boolean archivosValidos = validarArchivos(archivoPdf, archivoXml);
-					System.out.println("archivosValidos : " + archivosValidos);
 					if (archivosValidos) {
-						System.out.println("Todos los archivos existen.");
 						banderaArchivos = 1;
 						break;
 					} else {
@@ -123,7 +119,6 @@ public class DoctoUnificadoController {
 				}
 
 			} else {
-				System.out.println("Es nulo");
 				return ResponseEntity.ok("0");
 			}
 
@@ -155,12 +150,8 @@ public class DoctoUnificadoController {
 //	}
 	
 	 private static boolean validarArchivos(String archivo1Url, String archivo2Url) {
-		 System.out.println("archivo1Url: " + archivo1Url);
-		 System.out.println("archivo2Url: " + archivo2Url);
 	        boolean archivo1Existe = archivoExiste(archivo1Url);
 	        boolean archivo2Existe = archivoExiste(archivo2Url);
-	        System.out.println("archivo1Existe: " + archivo1Existe);
-	        System.out.println("archivo2Existe: " + archivo2Existe);
 	        return archivo1Existe && archivo2Existe;
 	    }
 
@@ -209,10 +200,6 @@ public class DoctoUnificadoController {
 			logger.info("Tiene información");
 			String validacionPDF = archivosPdfXml.get().getVc_ruta_archivo_pdf();
 			String validacionXML = archivosPdfXml.get().getVc_ruta_archivo_xml();
-			System.out.println("URL: " + url);
-			System.out.println("UrlServidor: " +UrlServidor());
-			System.out.println("archivoPdf: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf());
-			System.out.println("archivoXML: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_xml());
 			logger.info("archivoPdf: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf());
 			logger.info("archivoXML: " + UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_xml());
 			String pdf = UrlServidor() + archivosPdfXml.get().getVc_ruta_archivo_pdf();
@@ -221,7 +208,6 @@ public class DoctoUnificadoController {
 			String[] archivosRequeridos = { pdf, xml };
 			return ResponseEntity.ok(archivosRequeridos);
 		} else {
-			System.out.println("Es nulo");
 			return ResponseEntity.ok("0");
 		}
 

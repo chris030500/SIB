@@ -26,13 +26,7 @@ public class apiController {
 
     @PostMapping
     public ResponseEntity<String> recibirRespuesta(@RequestBody apiModel response) {
-        logger.debug("Respuesta recibida: " + response.getResponse());
-        logger.debug("Parametro adicional: " + response.getExtraParam());
-        logger.debug("Éxito de la operación: " + response.isSuccess());
         
-        System.out.println("Respuesta recibida: " + response.getResponse());
-        System.out.println("Parametro adicional: " + response.getExtraParam());
-        System.out.println("Éxito de la operación: " + response.isSuccess());
 
         try {
             int extraParam = Integer.parseInt(response.getExtraParam());
@@ -45,11 +39,9 @@ public class apiController {
                 envioCorreoService.prepararCorreo(13, response.getExtraParam());
             }
         } catch (NumberFormatException e) {
-            logger.error("Error al convertir el parámetro adicional a entero: " + response.getExtraParam(), e);
-            System.out.println("Error al convertir el parámetro adicional a entero: " + response.getExtraParam() + e);
+            logger.error("El identificador recibido no tiene un formato válido.", e);
         } catch (Exception e) {
             logger.error("Error al actualizar el estado de los mensajes recibidos", e);
-            System.out.println("Error al actualizar el estado de los mensajes recibidos" + e);
         }
 
         return new ResponseEntity<>("Respuesta recibida exitosamente", HttpStatus.OK);

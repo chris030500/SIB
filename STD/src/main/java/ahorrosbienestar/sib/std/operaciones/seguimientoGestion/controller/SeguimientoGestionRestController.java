@@ -257,9 +257,9 @@ public class SeguimientoGestionRestController {
 					: model.getAsignacionOfertas());
 			model.setRelacionCodigosModel(relacionCodigosModel != model.getRelacionCodigosModel() ? relacionCodigosModel
 					: model.getRelacionCodigosModel());
-			model.setVc_no_referencia(dto.getReferencia() != model.getVc_no_referencia() ? dto.getReferencia()
+			model.setVc_no_referencia(!java.util.Objects.equals(dto.getReferencia(), model.getVc_no_referencia()) ? dto.getReferencia()
 					: model.getVc_no_referencia());
-			model.setVc_descripcion(dto.getDescripcion() != model.getVc_descripcion() ? dto.getDescripcion()
+			model.setVc_descripcion(!java.util.Objects.equals(dto.getDescripcion(), model.getVc_descripcion()) ? dto.getDescripcion()
 					: model.getVc_descripcion());
 			model.setDt_fecha_gestion_realizada(dto.getFechaGestion());
 			model.setDt_fecha_modificacion(localDate);

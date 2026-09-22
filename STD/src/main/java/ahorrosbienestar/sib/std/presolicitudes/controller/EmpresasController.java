@@ -113,7 +113,7 @@ public class EmpresasController {
 			// Imprimir el error en el log del servidor para depuración
 			logger.error("No se pudo guardar la empresa.", e);
 
-			respuesta.put("error", "No se pudo guardar la empresa: " + e.getMessage());
+			respuesta.put("error", "No se pudo guardar la empresa: ");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
@@ -153,7 +153,7 @@ public class EmpresasController {
 			return ResponseEntity.ok(respuesta);
 
 		} catch (Exception e) {
-			respuesta.put("error", "Error al actualizar: " + e.getMessage());
+			respuesta.put("error", "Error al actualizar: ");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
@@ -177,7 +177,7 @@ public class EmpresasController {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
 			}
 		} catch (Exception e) {
-			respuesta.put("error", "Hubo un error al actualizar el estatus: " + e.getMessage());
+			respuesta.put("error", "Hubo un error al actualizar el estatus: ");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(respuesta);
 		}
 	}
@@ -222,7 +222,6 @@ public class EmpresasController {
 	        String fechaHora = ahora.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
 	        // Imprime el resultado
-	        System.out.print("false - Fecha y hora: " + fechaHora);
 	        logger.info("Proceso de Envio de correos con solicitudes de nomina a empresas para Vo.Bo.");
 	        expresionCron = cron;
 	        
@@ -230,7 +229,6 @@ public class EmpresasController {
 	        if (currentScheduledTask != null && !currentScheduledTask.isCancelled()) {
 	            currentScheduledTask.cancel(false);
 	            logger.info("Tarea cron anterior cancelada.");
-	            System.out.print("Tarea cron anterior cancelada.");
 	        }
 
 	        // Crea un nuevo trigger con la nueva expresión cron
@@ -240,7 +238,6 @@ public class EmpresasController {
 	        currentScheduledTask = taskScheduler.schedule(() -> procesarCron(), trigger);
 	        
 	        logger.info("Se actualizó cron de Envio de correos");
-	        System.out.print("Se actualizó cron de Envio de correos");
 
 	    } catch (Exception e) {
 	        logger.error("Error: " + e.getMessage());
@@ -251,12 +248,11 @@ public class EmpresasController {
 	public void procesarCron() {
 		try {
 			// Metodo envio de correo y adjunto
-			System.out.print("Inicia prepara correo");
 			empresaService.preparCorreoAdjuntoVobo();
 
 		} catch (Exception e) {
 			logger.info(Constantes.MENSAJE_ERROR + e.getMessage());
-			System.out.print("Error prepara correo: " + Constantes.MENSAJE_ERROR + e.getMessage());
+			logger.error("Error inesperado durante la operación.", e);
 		}
 	}
 	
@@ -268,7 +264,7 @@ public class EmpresasController {
 	        response.put("mensaje", resultado);
 	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
-	        response.put("mensaje", "Error interno: " + e.getMessage());
+	        response.put("mensaje", "Error interno: ");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}

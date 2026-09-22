@@ -37,7 +37,7 @@ public class CoreBancarioRestController {
 			// TODO: handle exception
 			logger.error("Entro en Exception");
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 
 	}
@@ -51,7 +51,7 @@ public class CoreBancarioRestController {
 			return ResponseEntity.ok(coreBancarioService.traeParticipantes(solicitud));
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 	}
 
@@ -64,7 +64,7 @@ public class CoreBancarioRestController {
 			return ResponseEntity.ok(coreBancarioService.listaProductos(solicitud));
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 
 	}
@@ -84,7 +84,7 @@ public class CoreBancarioRestController {
 			return ResponseEntity.ok(cargaDocumentosService.obtenerDoctAsociadoProd(producto));
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 
 	}
@@ -97,7 +97,7 @@ public class CoreBancarioRestController {
 			return ResponseEntity.ok(cargaDocumentosService.obtenerDoctAsociadoProdClienteNuevo(producto));
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.ok(e.getMessage());
+			return ResponseEntity.ok("Error interno al procesar la solicitud.");
 		}
 	}
 

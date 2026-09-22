@@ -199,7 +199,7 @@ public class UsuarioRestController {
             logger.info("No puede realizar el cambio de usuario");
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            System.out.println(""+e.getMessage());
+            logger.error("Error inesperado durante la operación.", e);
             return ResponseEntity.notFound().build();
         }
         

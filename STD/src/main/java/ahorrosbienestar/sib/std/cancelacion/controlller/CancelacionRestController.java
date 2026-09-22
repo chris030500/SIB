@@ -146,16 +146,15 @@ public class CancelacionRestController {
 			try {
 				horaModel = formatoHora.parse(model.getVc_hora_cancelacion());
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Hora de cancelación inválida para la solicitud "
+						+ model.getPk_id_solicitud_envio());
+				return;
 			}
 
 			if (diaActual.after(dateModel)) {
 
 				if (horaActual.after(horaModel)) {
 
-					// cumple con la fecha y la hora
-					System.out.println(true);
 
 					// Cancelamos la solicitud envio
 					model.setI_estatus(ESTATUS_CANCELAR_AUTO);
@@ -174,12 +173,8 @@ public class CancelacionRestController {
 						doct.setDt_fecha_cancelacion(fechaLocal);
 						doctEnvioService.save(doct);
 					});
-				} else
-					// cumple con la fecha, pero no con la hora
-					System.out.println(false);
-			} else
-				// no cumple con la fecha
-				System.out.println(false);
+				}
+			}
 
 			// Mandar correo
 			agregarNotificacion(fechaLocal, hora, model.getPk_id_solicitud_envio(),
@@ -200,16 +195,15 @@ public class CancelacionRestController {
 			try {
 				horaModel = formatoHora.parse(model.getVc_hora_cancelacion());
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Hora de cancelación inválida para la solicitud "
+						+ model.getPk_id_solicitud_envio());
+				return;
 			}
 
 			if (diaActual.after(dateModel)) {
 
 				if (horaActual.after(horaModel)) {
 
-					// cumple con la fecha y la hora
-					System.out.println(true);
 
 					// Cancelamos la solicitud envio
 					model.setI_estatus(ESTATUS_CANCELAR_AUTO);
@@ -225,12 +219,8 @@ public class CancelacionRestController {
 						doct.setDt_fecha_cancelacion(fechaLocal);
 						doctEnvioService.save(doct);
 					});
-				} else
-					// cumple con la fecha, pero no con la hora
-					System.out.println(false);
-			} else
-				// no cumple con la fecha
-				System.out.println(false);
+				}
+			}
 
 			// Mandar correo
 			agregarNotificacion(fechaLocal, hora, model.getPk_id_solicitud_envio(), "Cancelación por proceso automático.");

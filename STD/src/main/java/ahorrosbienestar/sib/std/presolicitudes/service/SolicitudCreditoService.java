@@ -63,7 +63,6 @@ public class SolicitudCreditoService {
             comentariosEmpresa = comentariosEmpresa == null ? "" : comentariosEmpresa.toUpperCase();
 
             if (noSolicitudStr == null || autoriza == null) {
-                System.out.println("Datos faltantes en la solicitud.");
                 continue;
             }
 

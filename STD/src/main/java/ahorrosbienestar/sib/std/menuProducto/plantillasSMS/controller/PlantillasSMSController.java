@@ -148,7 +148,7 @@ public class PlantillasSMSController {
 			return ResponseEntity.ok(respuesta);
 		} catch (Exception e) {
 			logger.error("Error:"+e.getMessage());
-			respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+			respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
 			respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 			return ResponseEntity.ok(respuesta);
 		}
@@ -167,7 +167,7 @@ public class PlantillasSMSController {
 	    } catch (Exception e) {
 	        logger.error("Error al cargar la plantilla con ID " + idPlantilla + ": " + e.getMessage(), e);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error al cargar la plantilla con ID " + idPlantilla + ": " + e.getMessage());
+	                             .body("Error al cargar la plantilla con ID " + idPlantilla + ": ");
 	    }
 	}
 	
@@ -228,7 +228,7 @@ public class PlantillasSMSController {
 				return ResponseEntity.ok(respuesta);
 			} catch (Exception e) {
 				logger.error("Error:"+e.getMessage());
-				respuesta.put(Constantes.TEXTO_MNS,e.getMessage());
+				respuesta.put(Constantes.TEXTO_MNS,"Error interno al procesar la solicitud.");
 				respuesta.put(Constantes.TIPO_MNS,Constantes.MENSAJE_ERROR);
 				return ResponseEntity.ok(respuesta);
 			}
