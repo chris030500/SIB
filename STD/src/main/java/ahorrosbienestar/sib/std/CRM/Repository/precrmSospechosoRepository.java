@@ -23,6 +23,16 @@ public interface precrmSospechosoRepository
     boolean existsByFkCargaDetalle(
         Long fkCargaDetalle
     );
+    
+    // =====================================================
+    // VALIDAR SI EL SOSPECHOSO YA ESTABA REGISTRADO
+    // =====================================================
+    
+    boolean existsByNombreIgnoreCaseAndTelefonoPrincipalAndActivo(
+            String nombre,
+            String telefonoPrincipal,
+            Integer activo
+    );
 
 
     // =====================================================

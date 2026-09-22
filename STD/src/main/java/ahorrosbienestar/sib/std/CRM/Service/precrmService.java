@@ -51,6 +51,7 @@ import ahorrosbienestar.sib.std.CRM.model.precrmReporteDescarga;
 import ahorrosbienestar.sib.std.CRM.model.precrmFuncionalidad;
 import ahorrosbienestar.sib.std.CRM.model.precrmPermiso;
 import ahorrosbienestar.sib.std.CRM.model.precrmUsuarioPermiso;
+import ahorrosbienestar.sib.std.CRM.model.precrmUsuarioRol;
 import ahorrosbienestar.sib.std.CRM.model.precrmSucursalConfig;
 import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
 import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
@@ -66,7 +67,7 @@ import ahorrosbienestar.sib.std.CRM.Repository.precrmSucursalConfigRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmClasificacionRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmEstatusRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmTipoGestionRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioRolRepository;
+
 
 
 
@@ -887,66 +888,100 @@ public class precrmService {
                 else {
 
 
-                    String claveDuplicado =
-                            generarClaveDuplicado(
-                                registro
-                            );
+                	String claveDuplicado =
+                	        generarClaveDuplicado(
+                	            registro
+                	        );
 
 
-                    boolean duplicadoArchivo =
-                            registrosArchivo
-                                .contains(
-                                    claveDuplicado
-                                );
+                	// =====================================================
+                	// DUPLICADO DENTRO DEL MISMO ARCHIVO
+                	// =====================================================
+
+                	boolean duplicadoArchivo =
+                	        registrosArchivo
+                	            .contains(
+                	                claveDuplicado
+                	            );
 
 
-                    boolean duplicadoBD =
-                            detalleRepository
-                                .existsByNombreProspectoIgnoreCaseAndTelefonoContactoAndResultadoCarga(
-
-                                    registro
-                                        .getNombreProspecto()
-                                        .trim(),
-
-                                    registro
-                                        .getTelefonoContacto()
-                                        .trim(),
-
-                                    "CARGADO"
-                                );
+                	if (duplicadoArchivo) {
 
 
-                    if (duplicadoArchivo ||
-                        duplicadoBD) {
+                	    resultado =
+                	        "DUPLICADO";
 
 
-                        resultado =
-                                "DUPLICADO";
+                	    motivo =
+                	        "Registro duplicado dentro del archivo "
+                	        + "por Nombre + Teléfono";
 
 
-                        motivo =
-                                "Prospecto duplicado por "
-                                + "Nombre + Teléfono";
+                	    totalDuplicados++;
+                	}
 
 
-                        totalDuplicados++;
-                    }
+                	// =====================================================
+                	// YA FUE REGISTRADO EN UNA CARGA ANTERIOR
+                	// =====================================================
+
+                	else {
 
 
-                    else {
+                	    boolean registradoPreviamente =
+                	        sospechosoRepository
+                	            .existsByNombreIgnoreCaseAndTelefonoPrincipalAndActivo(
+
+                	                registro
+                	                    .getNombreProspecto()
+                	                    .trim(),
+
+                	                registro
+                	                    .getTelefonoContacto()
+                	                    .trim(),
+
+                	                1
+                	            );
 
 
-                        resultado =
-                                "CARGADO";
+                	    if (registradoPreviamente) {
 
 
-                        totalCargados++;
+                	        resultado =
+                	            "REGISTRADO_PREVIAMENTE";
 
 
-                        registrosArchivo.add(
-                            claveDuplicado
-                        );
-                    }
+                	        motivo =
+                	            "El sospechoso ya había sido registrado "
+                	            + "previamente en PRE CRM.";
+
+                	        // también se agrega al Set del archivo actual.
+                	        registrosArchivo.add(
+                	            claveDuplicado
+                	        );
+
+                	    }
+
+
+                	    // =================================================
+                	    // REGISTRO NUEVO
+                	    // =================================================
+
+                	    else {
+
+
+                	        resultado =
+                	            "CARGADO";
+
+
+                	        totalCargados++;
+
+
+                	        registrosArchivo.add(
+                	            claveDuplicado
+                	        );
+                	    }
+                	}
                 }
             }
 
@@ -2345,7 +2380,7 @@ public void actualizarEstatusSospechoso(
 
 
     /*
-     * Guardamos cuándo inició la etapa
+     * Sguarda cuándo inició la etapa
      * que estamos terminando.
      */
     historial.setFechaInicioEtapa(
@@ -3917,23 +3952,202 @@ public boolean tieneAcceso(
 //=========================================================
 
 public String obtenerRolPrecrmUsuario(
-     String usuario) {
+      String usuario) {
 
 
- if (
-     usuario == null
-     || usuario.trim().isEmpty()
- ) {
-
-     return null;
- }
+  usuario =
+      normalizarUsuarioPRECRM(
+          usuario
+      );
 
 
- return usuarioRolRepository
-     .obtenerRolPrecrmPorUsuario(
-         usuario.trim()
-     )
-     .orElse(null);
+  if (
+      usuario == null
+      || usuario.isEmpty()
+  ) {
+
+      return null;
+  }
+
+
+  return usuarioRolRepository
+      .obtenerRolPrecrmPorUsuario(
+          usuario
+      )
+      .orElse(null);
+}
+
+
+//=========================================================
+//ASIGNAR O CAMBIAR ROL PRE CRM DE UN USUARIO
+//=========================================================
+
+@Transactional
+public precrmUsuarioRol asignarRolPrecrm(
+
+      Integer fkUsuario,
+      Integer fkRol,
+      String usuarioAdministrador) {
+
+
+  // =====================================================
+  // VALIDAR USUARIO
+  // =====================================================
+
+  if (fkUsuario == null) {
+
+      throw new RuntimeException(
+          "Debe seleccionar un usuario."
+      );
+  }
+
+
+  // =====================================================
+  // VALIDAR ROL
+  // =====================================================
+
+  if (fkRol == null) {
+
+      throw new RuntimeException(
+          "Debe seleccionar un rol PRE CRM."
+      );
+  }
+
+
+  // =====================================================
+  // VALIDAR QUE SEA UN ROL PERMITIDO PARA PRE CRM
+  // =====================================================
+
+  if (
+      usuarioRolRepository
+          .contarRolPrecrmActivo(
+              fkRol
+          ) == 0
+  ) {
+
+      throw new RuntimeException(
+          "El rol seleccionado no corresponde "
+          + "a un rol válido de PRE CRM."
+      );
+  }
+
+
+  // =====================================================
+  // NORMALIZAR USUARIO ADMINISTRADOR
+  // =====================================================
+
+  usuarioAdministrador =
+      normalizarUsuarioPRECRM(
+          usuarioAdministrador
+      );
+
+
+  if (
+      usuarioAdministrador == null
+      || usuarioAdministrador.isEmpty()
+  ) {
+
+      usuarioAdministrador =
+          "sistema";
+  }
+
+
+  // =====================================================
+  // BUSCAR SI EL USUARIO YA TIENE ROL PRE CRM
+  // =====================================================
+
+  Optional<precrmUsuarioRol> existente =
+      usuarioRolRepository
+          .findByFkUsuario(
+              fkUsuario
+          );
+
+
+  // =====================================================
+  // SI YA EXISTE → CAMBIAR / REACTIVAR
+  // =====================================================
+
+  if (existente.isPresent()) {
+
+
+      precrmUsuarioRol asignacion =
+          existente.get();
+
+
+      asignacion.setFkRol(
+          fkRol
+      );
+
+
+      asignacion.setActivo(
+          1
+      );
+
+
+      asignacion.setFechaModificacion(
+          LocalDateTime.now()
+      );
+
+
+      asignacion.setUsuarioModificacion(
+          usuarioAdministrador
+      );
+
+
+      return usuarioRolRepository
+          .saveAndFlush(
+              asignacion
+          );
+  }
+
+
+  // =====================================================
+  // SI NO EXISTE → CREAR NUEVA ASIGNACION
+  // =====================================================
+
+  precrmUsuarioRol nuevaAsignacion =
+      new precrmUsuarioRol();
+
+
+  nuevaAsignacion.setFkUsuario(
+      fkUsuario
+  );
+
+
+  nuevaAsignacion.setFkRol(
+      fkRol
+  );
+
+
+  nuevaAsignacion.setActivo(
+      1
+  );
+
+
+  nuevaAsignacion.setFechaAlta(
+      LocalDateTime.now()
+  );
+
+
+  nuevaAsignacion.setUsuarioAlta(
+      usuarioAdministrador
+  );
+
+
+  nuevaAsignacion.setFechaModificacion(
+      null
+  );
+
+
+  nuevaAsignacion.setUsuarioModificacion(
+      null
+  );
+
+
+  return usuarioRolRepository
+      .saveAndFlush(
+          nuevaAsignacion
+      );
 }
 
 }
