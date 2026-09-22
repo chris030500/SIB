@@ -1137,10 +1137,10 @@ public String mostrarConfiguracionPermisos(
     // =====================================================
 
     model.addAttribute(
-        "asignaciones",
-        precrmService
-            .obtenerAsignacionesPermisosActivas()
-    );
+    	    "asignaciones",
+    	    precrmService
+    	        .obtenerAsignacionesAccesoActivas()
+    	);
 
 
     // =====================================================

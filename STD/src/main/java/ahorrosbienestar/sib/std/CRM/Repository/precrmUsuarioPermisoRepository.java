@@ -110,6 +110,16 @@ public interface precrmUsuarioPermisoRepository
         );
         
      // =========================================================
+     // OBTENER RELACIONES POR PERMISO Y ESTATUS
+     // =========================================================
+
+     List<precrmUsuarioPermiso>
+         findByFkPermisoAndActivo(
+             Long fkPermiso,
+             Integer activo
+         );
+        
+     // =========================================================
      // VALIDAR PERMISO POR CLAVES
      // USUARIO + FUNCIONALIDAD + PERMISO
      // =========================================================

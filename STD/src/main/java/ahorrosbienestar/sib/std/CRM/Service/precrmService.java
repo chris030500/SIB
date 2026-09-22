@@ -55,6 +55,7 @@ import ahorrosbienestar.sib.std.CRM.model.precrmSucursalConfig;
 import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
 import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
 import ahorrosbienestar.sib.std.CRM.model.precrmTipoGestion;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioRolRepository;
 
 import ahorrosbienestar.sib.std.CRM.Repository.precrmCatalogoReporteRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmReporteDescargaRepository;
@@ -65,6 +66,7 @@ import ahorrosbienestar.sib.std.CRM.Repository.precrmSucursalConfigRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmClasificacionRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmEstatusRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmTipoGestionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioRolRepository;
 
 
 
@@ -89,6 +91,8 @@ public class precrmService {
     private final precrmTipoGestionRepository tipoGestionRepository;
     
     private final precrmUsuarioPermisoRepository usuarioPermisoRepository;
+    
+    private final precrmUsuarioRolRepository usuarioRolRepository;
 
     @Autowired
     private precrmGestionRepository gestionRepository;
@@ -116,7 +120,8 @@ public class precrmService {
             precrmClasificacionRepository clasificacionRepository,
             precrmEstatusRepository estatusRepository,
             precrmTipoGestionRepository tipoGestionRepository,
-            precrmUsuarioPermisoRepository usuarioPermisoRepository) {
+            precrmUsuarioPermisoRepository usuarioPermisoRepository,
+            precrmUsuarioRolRepository usuarioRolRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -138,6 +143,9 @@ public class precrmService {
         
         this.usuarioPermisoRepository =
                 usuarioPermisoRepository;
+        
+        this.usuarioRolRepository =
+                usuarioRolRepository;
         
         System.out.println(
         	    "PRECRM SERVICE CLASS = "
@@ -3120,14 +3128,49 @@ obtenerPermisosActivos() {
 }
 
 //=========================================================
-//OBTENER ASIGNACIONES ACTIVAS
+//OBTENER USUARIOS CON ACCESO ACTIVO
+//SOLO PERMISO ACCESO
 //=========================================================
 
 public List<precrmUsuarioPermiso>
-obtenerAsignacionesPermisosActivas() {
+obtenerAsignacionesAccesoActivas() {
+
+
+ // =====================================================
+ // BUSCAR PERMISO ACCESO
+ // =====================================================
+
+ precrmPermiso permisoAcceso =
+     permisoRepository
+         .findByClavePermiso(
+             "ACCESO"
+         );
+
+
+ // =====================================================
+ // VALIDAR CONFIGURACION
+ // =====================================================
+
+ if (
+     permisoAcceso == null
+     || permisoAcceso.getActivo() == null
+     || permisoAcceso.getActivo() != 1
+ ) {
+
+     throw new RuntimeException(
+         "No se encuentra configurado "
+         + "el permiso ACCESO."
+     );
+ }
+
+
+ // =====================================================
+ // OBTENER SOLO ACCESOS ACTIVOS
+ // =====================================================
 
  return usuarioPermisoRepository
-     .findByActivo(
+     .findByFkPermisoAndActivo(
+         permisoAcceso.getPkPermiso(),
          1
      );
 }
@@ -3867,6 +3910,30 @@ public boolean tieneAcceso(
              funcionalidad.trim(),
              "ACCESO"
          ) > 0;
+}
+
+//=========================================================
+//OBTENER ROL FUNCIONAL DEL USUARIO EN PRE CRM
+//=========================================================
+
+public String obtenerRolPrecrmUsuario(
+     String usuario) {
+
+
+ if (
+     usuario == null
+     || usuario.trim().isEmpty()
+ ) {
+
+     return null;
+ }
+
+
+ return usuarioRolRepository
+     .obtenerRolPrecrmPorUsuario(
+         usuario.trim()
+     )
+     .orElse(null);
 }
 
 }
