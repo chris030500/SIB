@@ -10,10 +10,16 @@ function abrirSelectorPRECRM() {
 }
 
 
-function subirArchivoPRECRM(input) {
+async function subirArchivoPRECRM(input) {
 
-    if (!input.files ||
-        input.files.length === 0) {
+    // =========================================================
+    // VALIDAR ARCHIVO SELECCIONADO
+    // =========================================================
+
+    if (
+        !input.files
+        || input.files.length === 0
+    ) {
 
         return;
     }
@@ -32,15 +38,23 @@ function subirArchivoPRECRM(input) {
 
 
     // =========================================================
-    // VALIDAR NOMBRE DEL ARCHIVO
+    // VALIDAR NOMBRE
     // =========================================================
 
     if (!patron.test(nombre)) {
 
-        Swal.fire({
+        await Swal.fire({
+
             icon: "warning",
+
             title: "Archivo no válido",
-            text: "El archivo debe tener el formato PRECRM_DDMMYYYY.xlsx"
+
+            text:
+                "El archivo debe tener el formato "
+                + "PRECRM_DDMMYYYY.xlsx",
+
+            confirmButtonText: "Aceptar"
+
         });
 
 
@@ -51,40 +65,251 @@ function subirArchivoPRECRM(input) {
 
 
     // =========================================================
-    // CONFIRMAR CARGA
+    // CONFIRMAR PROCESAMIENTO
+    // =========================================================
+
+    const confirmacion =
+        await Swal.fire({
+
+            icon: "question",
+
+            title: "Procesar archivo",
+
+            html:
+                "¿Deseas procesar el archivo "
+                + "<strong>"
+                + archivo.name
+                + "</strong>?",
+
+            showCancelButton: true,
+
+            confirmButtonText:
+                "Sí, procesar",
+
+            cancelButtonText:
+                "Cancelar",
+
+            reverseButtons: true
+
+        });
+
+
+    if (!confirmacion.isConfirmed) {
+
+        input.value = "";
+
+        return;
+    }
+
+
+    // =========================================================
+    // PREPARAR ARCHIVO
+    // =========================================================
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        archivo
+    );
+
+
+    const boton =
+        document.getElementById(
+            "btnProcesarArchivo"
+        );
+
+
+    // =========================================================
+    // MOSTRAR PROCESANDO
     // =========================================================
 
     Swal.fire({
 
-        icon: "question",
+        title:
+            "Procesando información...",
 
-        title: "Procesar archivo",
-
-        text:
-            "¿Deseas cargar el archivo "
+        html:
+            "<div class='spinner-border "
+            + "text-primary' "
+            + "role='status'></div>"
+            + "<br><br>"
+            + "Procesando "
+            + "<strong>"
             + archivo.name
-            + "?",
+            + "</strong>",
 
-        showCancelButton: true,
+        allowOutsideClick: false,
 
-        confirmButtonText: "Sí, cargar",
+        allowEscapeKey: false,
 
-        cancelButtonText: "Cancelar"
+        showConfirmButton: false,
 
-    }).then((result) => {
+        didOpen: () => {
 
-        if (result.isConfirmed) {
+            Swal.showLoading();
 
-            document.getElementById(
-                "formUploadPRECRM"
-            ).submit();
-
-        } else {
-
-            input.value = "";
         }
 
     });
+
+
+    if (boton) {
+
+        boton.disabled = true;
+
+    }
+
+
+    // =========================================================
+    // ENVIAR AL BACKEND
+    // =========================================================
+
+    try {
+
+
+        const response =
+            await fetch(
+
+                obtenerContextPathPRECRM()
+                + "/precrm/subirArchivo",
+
+                {
+
+                    method: "POST",
+
+                    body: formData
+
+                }
+
+            );
+
+
+        // =====================================================
+        // LEER RESPUESTA JSON
+        // =====================================================
+
+        let data;
+
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch (e) {
+
+            throw new Error(
+                "El servidor devolvió una respuesta inválida."
+            );
+        }
+
+
+        Swal.close();
+
+
+        // =====================================================
+        // ERROR DEL BACKEND
+        // =====================================================
+
+        if (!response.ok) {
+
+            await Swal.fire({
+
+                icon: "error",
+
+                title:
+                    "No fue posible procesar el archivo",
+
+                text:
+                    data.mensaje
+                    || "Ocurrió un error al procesar el archivo.",
+
+                confirmButtonText:
+                    "Aceptar"
+
+            });
+
+
+            input.value = "";
+
+            return;
+        }
+
+
+        // =====================================================
+        // PROCESAMIENTO CORRECTO
+        // =====================================================
+
+        await Swal.fire({
+
+            icon: "success",
+
+            title:
+                "¡Archivo procesado!",
+
+            text:
+                data.mensaje
+                || "El archivo se procesó correctamente.",
+
+            confirmButtonText:
+                "Aceptar"
+
+        });
+
+
+        // =====================================================
+        // RECARGAR INFORMACION DE LA PANTALLA
+        // =====================================================
+
+        window.location.reload();
+
+
+    } catch (error) {
+
+
+        Swal.close();
+
+
+        console.error(
+            "Error al procesar archivo PRE CRM:",
+            error
+        );
+
+
+        await Swal.fire({
+
+            icon: "error",
+
+            title:
+                "Error",
+
+            text:
+                error.message
+                || "No fue posible procesar el archivo.",
+
+            confirmButtonText:
+                "Aceptar"
+
+        });
+
+
+        input.value = "";
+
+
+    } finally {
+
+
+        if (boton) {
+
+            boton.disabled = false;
+
+        }
+
+    }
+
 }
 
 
@@ -1176,3 +1401,4 @@ window.confirmarQuitarSucursalPRECRM = function(boton) {
     });
 
 };
+

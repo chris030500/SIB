@@ -45,212 +45,148 @@
 
 
 
-        <!-- ===================================================== -->
-        <!--              INFORMACION DEL ARCHIVO                  -->
-        <!-- ===================================================== -->
+		<!-- ===================================================== -->
+		<!--              CARGA DE ARCHIVO PRE CRM                 -->
+		<!-- ===================================================== -->
 
-        <div class="border p-3 card mb-3">
+		<div class="border p-3 card mb-3">
 
-            <div class="row align-items-center">
+		    <div class="row align-items-center">
 
 
-                <!-- ARCHIVO DETECTADO -->
+		        <!-- ================================================= -->
+		        <!-- INFORMACION DE CARGA                              -->
+		        <!-- ================================================= -->
 
-				<div class="col-md-4">
+		        <div class="col-md-5">
 
-				    <div class="row mb-3">
+		            <h5 class="mb-2">
 
-				        <div class="col-md-4">
-				            <label>
-				                Archivo:
-				            </label>
-				        </div>
+		                <i class="bi bi-file-earmark-excel
+		                          text-success
+		                          mr-2">
+		                </i>
 
-				        <div class="col-md-8">
+		                Carga de archivo PRE CRM
 
-				            <strong id="nombreArchivo"
-				                    th:if="${archivoEncontrado}"
-				                    th:text="${nombreArchivo}">
-				            </strong>
+		            </h5>
 
-				            <span th:if="${archivoEncontrado == false}"
-				                  class="text-muted">
-				                -
-				            </span>
 
-				        </div>
+		            <p class="text-muted mb-0">
 
-				    </div>
+		                Seleccione el archivo que desea procesar.
 
+		                <br>
 
-				    <div class="row">
+		                El archivo debe tener el formato:
 
-				        <div class="col-md-4">
-				            <label>
-				                Fecha archivo:
-				            </label>
-				        </div>
+		                <strong>
+		                    PRECRM_DDMMYYYY.xlsx
+		                </strong>
 
-				        <div class="col-md-8">
+		            </p>
 
-				            <strong id="fechaArchivo"
-				                    th:if="${archivoEncontrado}"
-				                    th:text="${fechaArchivo}">
-				            </strong>
+		        </div>
 
-				            <span th:if="${archivoEncontrado == false}"
-				                  class="text-muted">
-				                -
-				            </span>
 
-				        </div>
+		        <!-- ================================================= -->
+		        <!-- ULTIMO PROCESAMIENTO                              -->
+		        <!-- ================================================= -->
 
-				    </div>
+		        <div class="col-md-4">
 
-				</div>
+		            <div class="row mb-2">
 
+		                <div class="col-md-6">
 
+		                    <label class="mb-0">
 
-				<!-- ULTIMO ARCHIVO PROCESADO -->
+		                        Último procesamiento:
 
-				<div class="col-md-5">
+		                    </label>
 
-				    <div class="row mb-3">
+		                </div>
 
-				        <div class="col-md-5">
 
-				            <label>
-				                Último archivo procesado:
-				            </label>
+		                <div class="col-md-6">
 
-				        </div>
+		                    <strong id="ultimoProcesamiento"
+		                            th:text="${ultimoProcesamiento != null
+		                                      ? ultimoProcesamiento
+		                                      : '-'}">
 
-				        <div class="col-md-7">
+		                        -
 
-				            <strong id="ultimoArchivoProcesado"
-				                    th:text="${ultimoArchivoProcesado != null 
-				                              ? ultimoArchivoProcesado 
-				                              : '-'}">
-				            </strong>
+		                    </strong>
 
-				        </div>
+		                </div>
 
-				    </div>
+		            </div>
 
+		        </div>
 
-				    <div class="row">
 
-				        <div class="col-md-5">
+		        <!-- ================================================= -->
+		        <!-- BOTON PROCESAR ARCHIVO                            -->
+		        <!-- ================================================= -->
 
-				            <label>
-				                Último procesamiento:
-				            </label>
+		        <div class="col-md-3">
 
-				        </div>
 
-				        <div class="col-md-7">
+		            <form id="formUploadPRECRM"
 
-				            <strong id="ultimoProcesamiento"
-				                    th:text="${ultimoProcesamiento != null 
-				                              ? ultimoProcesamiento 
-				                              : '-'}">
-				            </strong>
+		                  th:action="@{/precrm/subirArchivo}"
 
-				        </div>
+		                  method="post"
 
-				    </div>
+		                  enctype="multipart/form-data">
 
-				</div>
 
+		                <!-- ========================================= -->
+		                <!-- INPUT OCULTO                              -->
+		                <!-- ========================================= -->
 
+		                <input type="file"
 
-                <!-- BOTON PROCESAR ARCHIVO -->
+		                       id="fileUploadPRECRM"
 
-				<div class="col-md-3">
+		                       name="file"
 
-				    <form id="formUploadPRECRM"
-				          th:action="@{/precrm/subirArchivo}"
-				          method="post"
-				          enctype="multipart/form-data">
+		                       accept=".xlsx"
 
+		                       class="d-none"
 
-				        <!-- INPUT OCULTO -->
-				        <input type="file"
-				               id="fileUploadPRECRM"
-				               name="file"
-				               accept=".xlsx"
-				               class="d-none"
-				               onchange="subirArchivoPRECRM(this)">
+		                       onchange="subirArchivoPRECRM(this)">
 
 
-				        <!-- BOTON -->
-				        <button id="btnProcesarArchivo"
-				                type="button"
-				                class="btn w-100 py-3"
-				                th:classappend="${archivoEncontrado or carpetaDisponible == false}
-				                                ? 'btn-secondary'
-				                                : 'btn-primary'"
-				                th:disabled="${archivoEncontrado or carpetaDisponible == false}"
-				                onclick="abrirSelectorPRECRM()">
+		                <!-- ========================================= -->
+		                <!-- BOTON                                     -->
+		                <!-- ========================================= -->
 
-				            <i class="bi bi-cloud-arrow-up"></i>
+		                <button id="btnProcesarArchivo"
 
-				            PROCESAR ARCHIVO
+		                        type="button"
 
-				        </button>
+		                        class="btn btn-primary w-100 py-3"
 
-				    </form>
+		                        onclick="abrirSelectorPRECRM()">
 
-				</div>
 
-            </div>
+		                    <i class="bi bi-cloud-arrow-up mr-1"></i>
 
+		                    PROCESAR ARCHIVO
 
+		                </button>
 
-			<!-- ARCHIVO ENCONTRADO -->
 
-			<div class="alert alert-primary py-2 mt-3 mb-0"
-			     th:if="${archivoEncontrado}">
+		            </form>
 
-			    Se procesará el archivo más reciente detectado:
+		        </div>
 
-			    <strong th:text="${nombreArchivo}"></strong>
 
-			</div>
-			
-			<!-- ===================================================== -->
-			<!-- ERROR EN ARCHIVO DETECTADO                            -->
-			<!-- ===================================================== -->
+		    </div>
 
-			<div class="alert alert-danger mt-3 mb-0"
-			     th:if="${errorProcesamiento == true}">
-
-			    <i class="bi bi-exclamation-triangle-fill mr-2"></i>
-
-			    <strong>
-			        Archivo no procesado.
-			    </strong>
-
-			    <span th:text="${mensajeProcesamiento}">
-			        Se identificó un problema con el archivo.
-			    </span>
-
-			</div>
-			<!-- ===================================================== -->
-
-
-			<!-- ARCHIVO NO ENCONTRADO -->
-
-			<div class="alert alert-warning mt-3 mb-0"
-			     th:if="${archivoEncontrado == false}">
-
-			    <span th:text="${mensajeArchivo}">
-			        No se encontró un archivo PRECRM para procesar.
-			    </span>
-
-			</div>
-
-        </div>
+		</div>
 
 
 
@@ -592,7 +528,6 @@
     </div>
 
 </section>
-
 
 
 <!-- ===================================================== -->

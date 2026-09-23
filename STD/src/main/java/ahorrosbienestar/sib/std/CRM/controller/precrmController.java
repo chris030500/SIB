@@ -10,6 +10,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
 import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
@@ -473,26 +477,34 @@ public class precrmController {
 
         return "CRM/precrmSeguimientoSos";
     }
-    // =========================================================
-    // SUBIR ARCHIVO MANUALMENTE
-    // =========================================================
+ // =========================================================
+ // SUBIR Y PROCESAR ARCHIVO PRE CRM
+ // =========================================================
 
  @PostMapping("/subirArchivo")
- public String subirArchivo(
+ @ResponseBody
+ public ResponseEntity<Map<String, String>>
+ subirArchivo(
 
          @RequestParam("file")
          MultipartFile archivo,
 
-         Principal principal,
+         Principal principal) {
 
-         RedirectAttributes redirectAttributes) {
+
+     Path archivoGuardado =
+             null;
+
+
+     Map<String, String> respuesta =
+             new HashMap<>();
 
 
      try {
 
 
          // =====================================================
-         // USUARIO QUE SUBE EL ARCHIVO
+         // USUARIO
          // =====================================================
 
          String usuario =
@@ -502,19 +514,19 @@ public class precrmController {
 
 
          // =====================================================
-         // GUARDAR ARCHIVO EN PUBLICOS
+         // GUARDAR ARCHIVO
          // =====================================================
 
-         Path archivoGuardado =
-        	        precrmService
-        	            .guardarArchivo(
-        	                archivo,
-        	                usuario
-        	            );
+         archivoGuardado =
+                 precrmService
+                     .guardarArchivo(
+                         archivo,
+                         usuario
+                     );
 
 
          // =====================================================
-         // PROCESAR CON EL USUARIO QUE LO SUBIO
+         // PROCESAR
          // =====================================================
 
          precrmService
@@ -524,28 +536,85 @@ public class precrmController {
              );
 
 
-         redirectAttributes
-             .addFlashAttribute(
-                 "mensajeExito",
-                 "El archivo se cargó y procesó correctamente."
+         // =====================================================
+         // RESPUESTA CORRECTA
+         // =====================================================
+
+         respuesta.put(
+             "tipo",
+             "success"
+         );
+
+
+         respuesta.put(
+             "mensaje",
+             "El archivo "
+             + archivo.getOriginalFilename()
+             + " se procesó correctamente."
+         );
+
+
+         return ResponseEntity
+             .ok(
+                 respuesta
              );
 
 
      } catch (Exception e) {
 
 
-         redirectAttributes
-             .addFlashAttribute(
-                 "mensajeError",
-                 e.getMessage()
-             );
+         // =====================================================
+         // ELIMINAR ARCHIVO SI EL PROCESAMIENTO FALLO
+         // =====================================================
+
+         if (archivoGuardado != null) {
+
+             try {
+
+                 Files.deleteIfExists(
+                     archivoGuardado
+                 );
+
+             } catch (Exception ex) {
+
+                 ex.printStackTrace();
+
+             }
+
+         }
+
+
+         // =====================================================
+         // RESPUESTA DE ERROR
+         // =====================================================
+
+         String mensaje =
+                 e.getMessage() != null
+                 ? e.getMessage()
+                 : "No fue posible procesar el archivo.";
+
+
+         respuesta.put(
+             "tipo",
+             "error"
+         );
+
+
+         respuesta.put(
+             "mensaje",
+             mensaje
+         );
 
 
          e.printStackTrace();
+
+
+         return ResponseEntity
+             .badRequest()
+             .body(
+                 respuesta
+             );
      }
-
-
-     return "redirect:/precrm";
  }
     
     // =========================================================
