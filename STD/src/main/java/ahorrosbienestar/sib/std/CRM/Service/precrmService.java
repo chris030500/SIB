@@ -419,12 +419,16 @@ public class precrmService {
                     hoja.getRow(0);
 
 
-            if (filaEncabezados == null) {
+            if (
+            	    filaEncabezados == null
+            	    || filaEstaVacia(filaEncabezados)
+            	) {
 
-                throw new IOException(
-                    "El archivo PRE-CRM no contiene encabezados."
-                );
-            }
+            	    throw new IOException(
+            	        "El archivo PRE-CRM fue identificado, "
+            	        + "pero viene en blanco."
+            	    );
+            	}
 
 
             DataFormatter formatter =
@@ -719,6 +723,21 @@ public class precrmService {
                 leerArchivo(
                     archivo
                 );
+        
+     // =====================================================
+     // VALIDAR QUE EL ARCHIVO TENGA REGISTROS
+     // =====================================================
+
+     if (
+         registros == null
+         || registros.isEmpty()
+     ) {
+
+         throw new IOException(
+             "El archivo PRE-CRM fue identificado, "
+             + "pero no contiene registros para procesar."
+         );
+     }
 
 
         // =====================================================

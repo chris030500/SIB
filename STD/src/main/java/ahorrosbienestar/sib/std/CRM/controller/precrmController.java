@@ -150,9 +150,13 @@ public class precrmController {
                 } catch (Exception e) {
 
                     model.addAttribute(
-                            "mensajeProcesamiento",
-                            "No fue posible procesar el archivo: "
-                            + e.getMessage()
+                        "mensajeProcesamiento",
+                        e.getMessage()
+                    );
+
+                    model.addAttribute(
+                        "errorProcesamiento",
+                        true
                     );
 
                     e.printStackTrace();

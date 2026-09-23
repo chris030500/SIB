@@ -217,6 +217,25 @@
 			    <strong th:text="${nombreArchivo}"></strong>
 
 			</div>
+			
+			<!-- ===================================================== -->
+			<!-- ERROR EN ARCHIVO DETECTADO                            -->
+			<!-- ===================================================== -->
+
+			<div class="alert alert-danger mt-3 mb-0"
+			     th:if="${errorProcesamiento == true}">
+
+			    <i class="bi bi-exclamation-triangle-fill mr-2"></i>
+
+			    <strong>
+			        Archivo no procesado.
+			    </strong>
+
+			    <span th:text="${mensajeProcesamiento}">
+			        Se identificó un problema con el archivo.
+			    </span>
+
+			</div>
 
 
 			<!-- ARCHIVO NO ENCONTRADO -->
