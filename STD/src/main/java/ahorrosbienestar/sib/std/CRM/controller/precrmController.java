@@ -211,6 +211,11 @@ public class precrmController {
     			    "totalDuplicados",
     			    ultimaCarga.getTotalDuplicados()
     			);
+    			
+    			model.addAttribute(
+    				    "totalRegistradosPreviamente",
+    				    ultimaCarga.getTotalRegistradosPreviamente()
+    				);
 
     			model.addAttribute(
     				    "totalErrores",
@@ -250,6 +255,11 @@ public class precrmController {
              "totalDuplicados",
              0
          );
+         
+         model.addAttribute(
+        	        "totalRegistradosPreviamente",
+        	        0
+        	    );
 
          model.addAttribute(
              "totalErrores",

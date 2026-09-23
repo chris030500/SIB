@@ -690,7 +690,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 1. VALIDAR SI YA EXISTE
+        // VALIDAR SI YA EXISTE
         // =====================================================
 
         boolean archivoYaExiste =
@@ -712,7 +712,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 2. LEER EXCEL
+        // LEER EXCEL
         // =====================================================
 
         List<precrmRegistroDTO> registros =
@@ -722,7 +722,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 3. FECHA ARCHIVO
+        // FECHA ARCHIVO
         // =====================================================
 
         LocalDateTime fechaArchivo =
@@ -738,7 +738,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 4. CREAR CABECERA
+        // CREAR CABECERA
         // =====================================================
 
         precrmCarga carga =
@@ -778,6 +778,8 @@ public class precrmService {
         carga.setTotalCargados(0);
 
         carga.setTotalDuplicados(0);
+        
+        carga.setTotalRegistradosPreviamente(0);
 
         carga.setTotalErrores(0);
 
@@ -806,12 +808,14 @@ public class precrmService {
 
 
         // =====================================================
-        // 5. CONTADORES
+        // CONTADORES
         // =====================================================
 
         int totalCargados = 0;
 
         int totalDuplicados = 0;
+        
+        int totalRegistradosPreviamente = 0;
 
         int totalErrores = 0;
 
@@ -823,7 +827,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 6. RECORRER EXCEL
+        // RECORRER EXCEL
         // =====================================================
 
         for (precrmRegistroDTO registro
@@ -946,20 +950,18 @@ public class precrmService {
 
                 	    if (registradoPreviamente) {
 
-
                 	        resultado =
                 	            "REGISTRADO_PREVIAMENTE";
-
 
                 	        motivo =
                 	            "El sospechoso ya había sido registrado "
                 	            + "previamente en PRE CRM.";
 
-                	        // también se agrega al Set del archivo actual.
+                	        totalRegistradosPreviamente++;
+
                 	        registrosArchivo.add(
                 	            claveDuplicado
                 	        );
-
                 	    }
 
 
@@ -987,7 +989,7 @@ public class precrmService {
 
 
             // =================================================
-            // 7. CREAR DETALLE
+            // CREAR DETALLE
             // =================================================
 
             precrmCargaDetalle detalle =
@@ -1113,7 +1115,7 @@ public class precrmService {
 
 
          // =================================================
-         // 8. INSERTAR DETALLE
+         // INSERTAR DETALLE
          // =================================================
 
          System.out.println(
@@ -1146,7 +1148,7 @@ public class precrmService {
 
 
             // =================================================
-            // 9. SI ES CARGADO → CREAR SOSPECHOSO
+            // SI ES CARGADO → CREAR SOSPECHOSO
             // =================================================
 
          if ("CARGADO".equals(
@@ -1161,7 +1163,7 @@ public class precrmService {
 
 
         // =====================================================
-        // 10. ACTUALIZAR CABECERA
+        // ACTUALIZAR CABECERA
         // =====================================================
 
         carga.setTotalCargados(
@@ -1172,7 +1174,10 @@ public class precrmService {
         carga.setTotalDuplicados(
             totalDuplicados
         );
-
+        
+        carga.setTotalRegistradosPreviamente(
+        	    totalRegistradosPreviamente
+        	);
 
         carga.setTotalErrores(
             totalErrores
@@ -1217,6 +1222,11 @@ public class precrmService {
             "Duplicados: "
             + totalDuplicados
         );
+        
+        System.out.println(
+        	    "Registrados previamente: "
+        	    + totalRegistradosPreviamente
+        	);
 
         System.out.println(
             "Errores: "

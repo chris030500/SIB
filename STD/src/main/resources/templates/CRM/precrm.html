@@ -255,7 +255,7 @@
 
 		        <!-- ENCONTRADOS -->
 
-		        <div class="col-md-3">
+		        <div class="col-md">
 
 		            <div class="border rounded p-3 text-center">
 
@@ -289,7 +289,7 @@
 
 		        <!-- CARGADOS -->
 
-		        <div class="col-md-3">
+		        <div class="col-md">
 
 		            <div class="border rounded p-3 text-center">
 
@@ -323,7 +323,7 @@
 
 		        <!-- DUPLICADOS -->
 
-		        <div class="col-md-3">
+		        <div class="col-md">
 
 		            <div class="border rounded p-3 text-center">
 
@@ -352,12 +352,42 @@
 		            </div>
 
 		        </div>
+				
+				<!-- YA REGISTRADOS -->
+
+				<div class="col-md">
+
+				    <div class="border rounded p-3 text-center">
+
+				        <div class="mb-2">
+
+				            <i class="bi bi-person-check text-primary fs-4"></i>
+
+				        </div>
+
+
+				        <div>
+				            Ya registrados
+				        </div>
+
+
+				        <h3 id="totalRegistradosPreviamente"
+				            class="text-primary mb-0"
+				            th:text="${totalRegistradosPreviamente != null
+				                      ? totalRegistradosPreviamente
+				                      : 0}">
+				            0
+				        </h3>
+
+				    </div>
+
+				</div>
 
 
 
 		        <!-- CON ERROR -->
 
-		        <div class="col-md-3">
+		        <div class="col-md">
 
 		            <div class="border rounded p-3 text-center">
 

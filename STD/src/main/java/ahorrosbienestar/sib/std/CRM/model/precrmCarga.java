@@ -41,6 +41,9 @@ public class precrmCarga {
 
     @Column(name = "TOTAL_DUPLICADOS")
     private Integer totalDuplicados;
+    
+    @Column(name = "TOTAL_REGISTRADOS_PREVIAMENTE")
+    private Integer totalRegistradosPreviamente;
 
     @Column(name = "TOTAL_ERRORES")
     private Integer totalErrores;
@@ -125,6 +128,17 @@ public class precrmCarga {
 
     public void setTotalDuplicados(Integer totalDuplicados) {
         this.totalDuplicados = totalDuplicados;
+    }
+    
+    public Integer getTotalRegistradosPreviamente() {
+        return totalRegistradosPreviamente;
+    }
+
+    public void setTotalRegistradosPreviamente(
+            Integer totalRegistradosPreviamente) {
+
+        this.totalRegistradosPreviamente =
+                totalRegistradosPreviamente;
     }
 
     public Integer getTotalErrores() {
