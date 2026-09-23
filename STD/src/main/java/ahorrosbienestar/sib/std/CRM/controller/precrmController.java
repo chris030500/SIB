@@ -72,7 +72,6 @@ public class precrmController {
 
     // =========================================================
     // MOSTRAR PRE CRM
-    // DETECTAR Y PROCESAR ARCHIVO AUTOMATICAMENTE
     // =========================================================
 
     @GetMapping
@@ -80,38 +79,75 @@ public class precrmController {
             Model model,
             Principal principal) {
 
+
+        // =========================================================
+        // CATALOGO GENERAL PRE CRM
+        // =========================================================
+
         model.addAttribute(
-                "catalogo",
-                CATALOGO_CRM
+            "catalogo",
+            CATALOGO_CRM
         );
+
+
+        // =========================================================
+        // RESULTADO DEL ULTIMO PROCESAMIENTO
+        // =========================================================
 
         String usuario =
                 principal != null
                 ? principal.getName()
-                : "SISTEMA";
-
-        try {
-
-            Path archivo =
-                    precrmService
-                        .obtenerArchivoMasReciente();
+                : null;
 
 
-            if (archivo != null) {
+        precrmCarga ultimaCarga =
+                precrmService
+                    .obtenerUltimaCarga(
+                        usuario
+                    );
 
-                String nombreArchivo =
-                        archivo.getFileName()
-                               .toString();
+
+        if (ultimaCarga != null) {
 
 
-                LocalDateTime fechaArchivo =
-                        Files
-                            .getLastModifiedTime(archivo)
-                            .toInstant()
-                            .atZone(
-                                ZoneId.systemDefault()
-                            )
-                            .toLocalDateTime();
+            model.addAttribute(
+                "totalEncontrados",
+                ultimaCarga.getTotalEncontrados()
+            );
+
+
+            model.addAttribute(
+                "totalCargados",
+                ultimaCarga.getTotalCargados()
+            );
+
+
+            model.addAttribute(
+                "totalDuplicados",
+                ultimaCarga.getTotalDuplicados()
+            );
+
+
+            model.addAttribute(
+                "totalRegistradosPreviamente",
+                ultimaCarga.getTotalRegistradosPreviamente()
+            );
+
+
+            model.addAttribute(
+                "totalErrores",
+                ultimaCarga.getTotalErrores()
+            );
+
+
+            // =====================================================
+            // FECHA DEL ULTIMO PROCESAMIENTO
+            // =====================================================
+
+            if (
+                ultimaCarga.getFechaProcesamiento()
+                != null
+            ) {
 
 
                 DateTimeFormatter formato =
@@ -121,177 +157,76 @@ public class precrmController {
 
 
                 model.addAttribute(
-                        "archivoEncontrado",
-                        true
-                );
-
-                model.addAttribute(
-                        "nombreArchivo",
-                        nombreArchivo
-                );
-
-                model.addAttribute(
-                        "fechaArchivo",
-                        fechaArchivo.format(formato)
-                );
-
-
-                // =============================================
-                // PROCESAR Y REGISTRAR EN BD
-                // =============================================
-
-                try {
-
-                    precrmService.procesarArchivo(
-                            archivo,
-                            usuario
-                    );
-
-                } catch (Exception e) {
-
-                    model.addAttribute(
-                        "mensajeProcesamiento",
-                        e.getMessage()
-                    );
-
-                    model.addAttribute(
-                        "errorProcesamiento",
-                        true
-                    );
-
-                    e.printStackTrace();
-                }
-                //
-
-            } else {
-
-                model.addAttribute(
-                        "archivoEncontrado",
-                        false
-                );
-
-                model.addAttribute(
-                        "mensajeArchivo",
-                        "No se encontró un archivo PRECRM para procesar."
+                    "ultimoProcesamiento",
+                    ultimaCarga
+                        .getFechaProcesamiento()
+                        .format(formato)
                 );
             }
 
 
-        } catch (Exception e) {
+        } else {
+
 
             model.addAttribute(
-                    "archivoEncontrado",
-                    false
+                "totalEncontrados",
+                0
             );
+
 
             model.addAttribute(
-                    "mensajeArchivo",
-                    "No fue posible consultar los archivos de PRE-CRM."
+                "totalCargados",
+                0
             );
 
-            e.printStackTrace();
+
+            model.addAttribute(
+                "totalDuplicados",
+                0
+            );
+
+
+            model.addAttribute(
+                "totalRegistradosPreviamente",
+                0
+            );
+
+
+            model.addAttribute(
+                "totalErrores",
+                0
+            );
+
+
+            model.addAttribute(
+                "totalNoViables",
+                0
+            );
         }
 
-     // =========================================================
-     // RESULTADO DEL ULTIMO PROCESAMIENTO
-     // =========================================================
 
-        precrmCarga ultimaCarga =
-             precrmService.obtenerUltimaCarga();
+        // =========================================================
+        // DETALLE DE INCIDENCIAS
+        // =========================================================
 
-
-     if (ultimaCarga != null) {
-
-    	 model.addAttribute(
-    			    "totalEncontrados",
-    			    ultimaCarga.getTotalEncontrados()
-    			);
-
-    			model.addAttribute(
-    			    "totalCargados",
-    			    ultimaCarga.getTotalCargados()
-    			);
-
-    			model.addAttribute(
-    			    "totalDuplicados",
-    			    ultimaCarga.getTotalDuplicados()
-    			);
-    			
-    			model.addAttribute(
-    				    "totalRegistradosPreviamente",
-    				    ultimaCarga.getTotalRegistradosPreviamente()
-    				);
-
-    			model.addAttribute(
-    				    "totalErrores",
-    				    ultimaCarga.getTotalErrores()
-    				);
+        List<precrmCargaDetalle> incidencias =
+                precrmService
+                    .obtenerIncidenciasUltimoProcesamiento(
+                        usuario
+                    );
 
 
-         if (ultimaCarga.getFechaProcesamiento() != null) {
-
-             DateTimeFormatter formato =
-                     DateTimeFormatter.ofPattern(
-                         "dd/MM/yyyy HH:mm"
-                     );
-
-             model.addAttribute(
-                 "ultimoProcesamiento",
-                 ultimaCarga
-                     .getFechaProcesamiento()
-                     .format(formato)
-             );
-         }
+        model.addAttribute(
+            "incidencias",
+            incidencias
+        );
 
 
-     } else {
+        // =========================================================
+        // VISTA
+        // =========================================================
 
-         model.addAttribute(
-             "totalEncontrados",
-             0
-         );
-
-         model.addAttribute(
-             "totalCargados",
-             0
-         );
-
-         model.addAttribute(
-             "totalDuplicados",
-             0
-         );
-         
-         model.addAttribute(
-        	        "totalRegistradosPreviamente",
-        	        0
-        	    );
-
-         model.addAttribute(
-             "totalErrores",
-             0
-         );
-
-         model.addAttribute(
-             "totalNoViables",
-             0
-         );
-     }
-     
-  // =========================================================
-  // DETALLE DE INCIDENCIAS
-  // =========================================================
-
-  List<precrmCargaDetalle> incidencias =
-          precrmService
-              .obtenerIncidenciasUltimoProcesamiento();
-
-
-  model.addAttribute(
-      "incidencias",
-      incidencias
-  );
-
-  return "CRM/precrm";
+        return "CRM/precrm";
     }
 
 
@@ -542,49 +477,76 @@ public class precrmController {
     // SUBIR ARCHIVO MANUALMENTE
     // =========================================================
 
-    @PostMapping("/subirArchivo")
-    public String subirArchivo(
-            @RequestParam("file")
-            MultipartFile archivo,
-            RedirectAttributes redirectAttributes) {
+ @PostMapping("/subirArchivo")
+ public String subirArchivo(
 
-        try {
+         @RequestParam("file")
+         MultipartFile archivo,
 
-            // Solo colocamos el archivo en Públicos
-            precrmService.guardarArchivo(
-                    archivo
-            );
+         Principal principal,
+
+         RedirectAttributes redirectAttributes) {
 
 
-            redirectAttributes
-                .addFlashAttribute(
-                    "mensajeExito",
-                    "El archivo se cargó correctamente."
-                );
+     try {
 
 
-        } catch (Exception e) {
+         // =====================================================
+         // USUARIO QUE SUBE EL ARCHIVO
+         // =====================================================
 
-            redirectAttributes
-                .addFlashAttribute(
-                    "mensajeError",
-                    e.getMessage()
-                );
-
-            e.printStackTrace();
-        }
+         String usuario =
+                 principal != null
+                 ? principal.getName()
+                 : "SISTEMA";
 
 
-        /*
-         * Al regresar a /precrm:
-         *
-         * Detecta el archivo.
-         * Lo lee.
-         * Lo procesa.
-         * Lo registra en BD.
-         */
-        return "redirect:/precrm";
-    }
+         // =====================================================
+         // GUARDAR ARCHIVO EN PUBLICOS
+         // =====================================================
+
+         Path archivoGuardado =
+        	        precrmService
+        	            .guardarArchivo(
+        	                archivo,
+        	                usuario
+        	            );
+
+
+         // =====================================================
+         // PROCESAR CON EL USUARIO QUE LO SUBIO
+         // =====================================================
+
+         precrmService
+             .procesarArchivo(
+                 archivoGuardado,
+                 usuario
+             );
+
+
+         redirectAttributes
+             .addFlashAttribute(
+                 "mensajeExito",
+                 "El archivo se cargó y procesó correctamente."
+             );
+
+
+     } catch (Exception e) {
+
+
+         redirectAttributes
+             .addFlashAttribute(
+                 "mensajeError",
+                 e.getMessage()
+             );
+
+
+         e.printStackTrace();
+     }
+
+
+     return "redirect:/precrm";
+ }
     
     // =========================================================
     // ACTUALIZAR ESTATUS DESDE DETALLE DEL SOSPECHOSO

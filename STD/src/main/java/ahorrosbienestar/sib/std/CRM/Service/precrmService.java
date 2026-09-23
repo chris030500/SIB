@@ -6,20 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -207,154 +204,163 @@ public class precrmService {
     };
 
 
-    // =========================================================
-    // OBTENER ARCHIVO PRECRM MAS RECIENTE
-    // =========================================================
+ // =========================================================
+ // GUARDAR ARCHIVO MANUAL
+ // POR USUARIO
+ // =========================================================
 
-    public Path obtenerArchivoMasReciente()
-            throws IOException {
-
-
-        Path carpeta =
-                obtenerCarpetaPRECRM();
-
-
-        try (Stream<Path> archivos =
-                Files.list(carpeta)) {
+ public Path guardarArchivo(
+         MultipartFile archivo,
+         String usuario)
+         throws IOException {
 
 
-            Optional<Path> archivoMasReciente =
-                    archivos
+     // =====================================================
+     // VALIDAR ARCHIVO
+     // =====================================================
 
-                    .filter(
-                        Files::isRegularFile
-                    )
+     if (
+         archivo == null
+         || archivo.isEmpty()
+     ) {
 
-                    .filter(path -> {
-
-                        String nombre =
-                                path.getFileName()
-                                    .toString()
-                                    .trim()
-                                    .toUpperCase();
-
-
-                        return nombre.matches(
-                            "PRECRM_\\d{8}\\.XLSX"
-                        );
-                    })
-
-                    .max(
-                        Comparator.comparing(
-                            path -> {
-
-                                try {
-
-                                    return Files
-                                            .getLastModifiedTime(
-                                                path
-                                            );
-
-                                } catch (IOException e) {
-
-                                    return FileTime
-                                            .fromMillis(0);
-                                }
-                            }
-                        )
-                    );
+         throw new IOException(
+             "No se seleccionó ningún archivo."
+         );
+     }
 
 
-            return archivoMasReciente
-                    .orElse(null);
-        }
-    }
+     // =====================================================
+     // VALIDAR USUARIO
+     // =====================================================
+
+     usuario =
+         normalizarUsuarioPRECRM(
+             usuario
+         );
 
 
-    // =========================================================
-    // GUARDAR ARCHIVO MANUAL
-    // =========================================================
+     if (
+         usuario == null
+         || usuario.isEmpty()
+     ) {
 
-    public Path guardarArchivo(
-            MultipartFile archivo)
-            throws IOException {
-
-
-        if (archivo == null ||
-            archivo.isEmpty()) {
-
-            throw new IOException(
-                "No se seleccionó ningún archivo."
-            );
-        }
+         throw new IOException(
+             "No fue posible identificar al usuario "
+             + "que realiza la carga."
+         );
+     }
 
 
-        String nombreOriginal =
-                archivo.getOriginalFilename();
+     // =====================================================
+     // OBTENER NOMBRE ORIGINAL
+     // =====================================================
+
+     String nombreOriginal =
+             archivo.getOriginalFilename();
 
 
-        if (nombreOriginal == null ||
-            nombreOriginal.trim().isEmpty()) {
+     if (
+         nombreOriginal == null
+         || nombreOriginal.trim().isEmpty()
+     ) {
 
-            throw new IOException(
-                "No fue posible obtener el nombre del archivo."
-            );
-        }
-
-
-        String nombreArchivo =
-                Paths.get(
-                    nombreOriginal
-                )
-                .getFileName()
-                .toString()
-                .trim();
+         throw new IOException(
+             "No fue posible obtener el nombre del archivo."
+         );
+     }
 
 
-        String nombreValidacion =
-                nombreArchivo
-                    .toUpperCase();
+     String nombreArchivo =
+             Paths.get(
+                 nombreOriginal
+             )
+             .getFileName()
+             .toString()
+             .trim();
 
 
-        if (!nombreValidacion.matches(
-                "PRECRM_\\d{8}\\.XLSX")) {
+     // =====================================================
+     // VALIDAR NOMBRE DEL ARCHIVO
+     // =====================================================
 
-            throw new IOException(
-                "El archivo debe tener el formato "
-                + "PRECRM_DDMMYYYY.xlsx"
-            );
-        }
-
-
-        Path carpeta =
-                obtenerCarpetaPRECRM();
+     String nombreValidacion =
+             nombreArchivo
+                 .toUpperCase();
 
 
-        Path destino =
-                carpeta.resolve(
-                    nombreArchivo
-                );
+     if (!nombreValidacion.matches(
+             "PRECRM_\\d{8}\\.XLSX")) {
+
+         throw new IOException(
+             "El archivo debe tener el formato "
+             + "PRECRM_DDMMYYYY.xlsx"
+         );
+     }
 
 
-        if (Files.exists(destino)) {
+     // =====================================================
+     // CARPETA BASE PRE CRM
+     // =====================================================
 
-            throw new IOException(
-                "El archivo "
-                + nombreArchivo
-                + " ya existe."
-            );
-        }
+     Path carpetaBase =
+             obtenerCarpetaPRECRM();
 
 
-        Files.copy(
-            archivo.getInputStream(),
-            destino,
-            StandardCopyOption.REPLACE_EXISTING
-        );
+     // =====================================================
+     // CARPETA PARTICULAR DEL USUARIO
+     // =====================================================
+
+     Path carpetaUsuario =
+             carpetaBase.resolve(
+                 usuario
+             );
 
 
-        return destino;
-    }
+     Files.createDirectories(
+         carpetaUsuario
+     );
+
+
+     // =====================================================
+     // DESTINO
+     // =====================================================
+
+     Path destino =
+             carpetaUsuario.resolve(
+                 nombreArchivo
+             );
+
+
+     // =====================================================
+     // VALIDAR SI EL MISMO USUARIO YA LO SUBIO
+     // =====================================================
+
+     if (Files.exists(destino)) {
+
+         throw new IOException(
+             "El archivo "
+             + nombreArchivo
+             + " ya fue cargado previamente "
+             + "por el usuario "
+             + usuario
+             + "."
+         );
+     }
+
+
+     // =====================================================
+     // COPIAR ARCHIVO
+     // =====================================================
+
+     Files.copy(
+         archivo.getInputStream(),
+         destino
+     );
+
+
+     return destino;
+ }
     
     public void actualizarTelefonoAlterno(
             Long pkSospechoso,
@@ -699,15 +705,18 @@ public class precrmService {
 
         boolean archivoYaExiste =
                 cargaRepository
-                    .existsByNombreArchivo(
-                        nombreArchivo
+                    .existsByNombreArchivoAndUsuarioProceso(
+                        nombreArchivo,
+                        usuario
                     );
 
 
         if (archivoYaExiste) {
 
             System.out.println(
-                "Archivo ya procesado: "
+                "Archivo ya procesado por el usuario "
+                + usuario
+                + ": "
                 + nombreArchivo
             );
 
@@ -781,8 +790,8 @@ public class precrmService {
 
 
         carga.setTipoCarga(
-            "AUTOMATICA"
-        );
+        	    "MANUAL"
+        	);
 
 
         carga.setEstatusProceso(
@@ -2060,101 +2069,6 @@ public class precrmService {
         return leerArchivo(
             archivo
         ).size();
-    }
-
-
-    // =========================================================
-    // ULTIMA CARGA
-    // =========================================================
-
-    public precrmCarga obtenerUltimaCarga() {
-
-
-        return cargaRepository
-                .findTopByOrderByFechaProcesamientoDesc()
-                .orElse(null);
-    }
-
-
- // =========================================================
- // INCIDENCIAS ULTIMO PROCESAMIENTO
- // =========================================================
-
-    public List<precrmCargaDetalle>
-    obtenerIncidenciasUltimoProcesamiento() {
-
-        precrmCarga ultimaCarga =
-                obtenerUltimaCarga();
-
-        if (ultimaCarga == null) {
-            return new ArrayList<>();
-        }
-
-        List<String> resultados =
-                List.of(
-                    "DUPLICADO",
-                    "ERROR"
-                );
-
-        return detalleRepository
-                .findByFkCargaAndResultadoCargaInOrderByFilaExcelAsc(
-                    ultimaCarga.getPkCarga(),
-                    resultados
-                );
-    }
-
-
-    // =========================================================
-    // ULTIMO ARCHIVO PROCESADO
-    // =========================================================
-
-    public String obtenerUltimoArchivoProcesado() {
-
-
-    	precrmCarga ultimaCarga =
-                obtenerUltimaCarga();
-
-
-        if (ultimaCarga == null) {
-
-            return null;
-        }
-
-
-        return ultimaCarga
-                .getNombreArchivo();
-    }
-
-
-    // =========================================================
-    // FECHA ULTIMO PROCESAMIENTO
-    // =========================================================
-
-    public String obtenerUltimoProcesamiento() {
-
-
-    	precrmCarga ultimaCarga =
-                obtenerUltimaCarga();
-
-
-        if (ultimaCarga == null ||
-            ultimaCarga.getFechaProcesamiento() == null) {
-
-            return null;
-        }
-
-
-        DateTimeFormatter formato =
-                DateTimeFormatter.ofPattern(
-                    "dd/MM/yyyy HH:mm"
-                );
-
-
-        return ultimaCarga
-                .getFechaProcesamiento()
-                .format(
-                    formato
-                );
     }
     
  // =========================================================
@@ -4178,6 +4092,71 @@ public precrmUsuarioRol asignarRolPrecrm(
       .saveAndFlush(
           nuevaAsignacion
       );
+}
+
+//=========================================================
+//ULTIMA CARGA DEL USUARIO
+//=========================================================
+
+public precrmCarga obtenerUltimaCarga(
+     String usuario) {
+
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     return null;
+ }
+
+
+ return cargaRepository
+     .findTopByUsuarioProcesoOrderByFechaProcesamientoDesc(
+         usuario
+     )
+     .orElse(null);
+}
+
+//=========================================================
+//INCIDENCIAS ULTIMO PROCESAMIENTO DEL USUARIO
+//=========================================================
+
+public List<precrmCargaDetalle>
+obtenerIncidenciasUltimoProcesamiento(
+     String usuario) {
+
+
+ precrmCarga ultimaCarga =
+         obtenerUltimaCarga(
+             usuario
+         );
+
+
+ if (ultimaCarga == null) {
+
+     return new ArrayList<>();
+ }
+
+
+ List<String> resultados =
+         List.of(
+             "DUPLICADO",
+             "ERROR"
+         );
+
+
+ return detalleRepository
+     .findByFkCargaAndResultadoCargaInOrderByFilaExcelAsc(
+         ultimaCarga.getPkCarga(),
+         resultados
+     );
 }
 
 }

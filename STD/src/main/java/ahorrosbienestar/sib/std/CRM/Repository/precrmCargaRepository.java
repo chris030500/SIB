@@ -15,8 +15,18 @@ public interface precrmCargaRepository
     boolean existsByNombreArchivo(
         String nombreArchivo
     );
+    
+    boolean existsByNombreArchivoAndUsuarioProceso(
+            String nombreArchivo,
+            String usuarioProceso
+    );
 
 
     Optional<precrmCarga>
         findTopByOrderByFechaProcesamientoDesc();
+        
+        Optional<precrmCarga>
+        findTopByUsuarioProcesoOrderByFechaProcesamientoDesc(
+            String usuarioProceso
+        );
 }
