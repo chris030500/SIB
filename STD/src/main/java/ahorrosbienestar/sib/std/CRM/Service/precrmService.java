@@ -2122,18 +2122,34 @@ return sospechosos;
 
 
  // =========================================================
- // CONTAR SOSPECHOSOS POR ESTATUS
+ // CONTAR SOSPECHOSOS POR ESTATUS Y USUARIO
  // =========================================================
 
  public long contarSospechososPorEstatus(
+         String usuario,
          String estatus) {
 
 
+     usuario =
+         normalizarUsuarioPRECRM(
+             usuario
+         );
+
+
+     if (
+         usuario == null
+         || usuario.isEmpty()
+     ) {
+
+         return 0;
+     }
+
+
      return sospechosoRepository
-             .countByEstatusAndActivo(
-                 estatus,
-                 1
-             );
+         .contarSospechososPorEstatusYUsuario(
+             estatus,
+             usuario
+         );
  }
  
  
@@ -2141,13 +2157,25 @@ return sospechosos;
 //BUSCAR SOSPECHOSOS CON FILTROS
 //=========================================================
 
-public List<precrmSospechoso> buscarSospechosos(
-      String folio,
-      String nombre,
-      String telefono,
-      String clasificacion,
-      String estatus,
-      LocalDate fechaRegistro) {
+ public List<precrmSospechoso> buscarSospechosos(
+	      String usuario,
+	      String folio,
+	      String nombre,
+	      String telefono,
+	      String clasificacion,
+	      String estatus,
+	      LocalDate fechaRegistro) {
+	 
+	    usuario =
+	            normalizarUsuarioPRECRM(
+	                usuario
+	            );
+
+
+	        folio =
+	            limpiarFiltro(
+	                folio
+	            );
 
 
   // =====================================================
@@ -2206,22 +2234,24 @@ public List<precrmSospechoso> buscarSospechosos(
 
 
   return sospechosoRepository
-          .buscarSospechosos(
+	        .buscarSospechososPorUsuario(
 
-              folio,
+	            usuario,
 
-              nombre,
+	            folio,
 
-              telefono,
+	            nombre,
 
-              clasificacion,
+	            telefono,
 
-              estatus,
+	            clasificacion,
 
-              fechaInicio,
+	            estatus,
 
-              fechaFin
-          );
+	            fechaInicio,
+
+	            fechaFin
+	        );
 }
 
 

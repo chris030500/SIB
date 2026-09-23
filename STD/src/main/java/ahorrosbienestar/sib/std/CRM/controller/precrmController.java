@@ -359,15 +359,16 @@ public class precrmController {
         // =====================================================
 
         List<precrmSospechoso> sospechosos =
-                precrmService
-                    .buscarSospechosos(
-                        folio,
-                        nombre,
-                        telefono,
-                        clasificacion,
-                        estatus,
-                        fechaRegistro
-                    );
+        		precrmService
+        	    .buscarSospechosos(
+        	        usuario,
+        	        folio,
+        	        nombre,
+        	        telefono,
+        	        clasificacion,
+        	        estatus,
+        	        fechaRegistro
+        	    );
 
 
         model.addAttribute(
@@ -422,57 +423,63 @@ public class precrmController {
         // =====================================================
 
         model.addAttribute(
-            "totalRegistrados",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "REGISTRADO"
-                )
-        );
+        	    "totalRegistrados",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "REGISTRADO"
+        	        )
+        	);
 
 
         model.addAttribute(
-            "totalSeguimiento",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "SEGUIMIENTO"
-                )
-        );
+        	    "totalSeguimiento",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "SEGUIMIENTO"
+        	        )
+        	);
 
 
-        model.addAttribute(
-            "totalCitaAgendada",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "CITA_AGENDADA"
-                )
-        );
+        	model.addAttribute(
+        	    "totalCitaAgendada",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "CITA_AGENDADA"
+        	        )
+        	);
 
 
-        model.addAttribute(
-            "totalCotizacion",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "COTIZACION"
-                )
-        );
+        	model.addAttribute(
+        	    "totalCotizacion",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "COTIZACION"
+        	        )
+        	);
 
 
-        model.addAttribute(
-            "totalSolicitud",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "SOLICITUD"
-                )
-        );
+        	model.addAttribute(
+        	    "totalSolicitud",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "SOLICITUD"
+        	        )
+        	);
 
 
-        model.addAttribute(
-            "totalConcluidos",
-            precrmService
-                .contarSospechososPorEstatus(
-                    "CONCLUIDO"
-                )
-        );
+        	model.addAttribute(
+        	    "totalConcluidos",
+        	    precrmService
+        	        .contarSospechososPorEstatus(
+        	            usuario,
+        	            "CONCLUIDO"
+        	        )
+        	);
 
 
         return "CRM/precrmSeguimientoSos";
