@@ -454,28 +454,27 @@
 		                    </td>
 
 
-		                    <!-- RESULTADO -->
+							<!-- RESULTADO -->
+							<td>
 
-		                    <td>
+							    <!-- DUPLICADO -->
+							    <span th:if="${incidencia.resultadoCarga == 'DUPLICADO'}"
+							          class="badge bg-warning text-dark rounded-pill px-2 py-1">
 
+							        Duplicado
 
-		                        <!-- DUPLICADO -->
-
-								<span th:if="${incidencia.resultadoCarga == 'DUPLICADO'}"
-								      class="badge badge-warning">
-								    Duplicado
-								</span>
-
-
-		                        <!-- ERROR -->
-
-								<span th:if="${incidencia.resultadoCarga == 'ERROR'}"
-								      class="badge badge-danger">
-								    Error
-								</span>
+							    </span>
 
 
-		                    </td>
+							    <!-- ERROR -->
+							    <span th:if="${incidencia.resultadoCarga == 'ERROR'}"
+							          class="badge bg-danger text-white rounded-pill px-2 py-1">
+
+							        Error
+
+							    </span>
+
+							</td>
 
 
 		                    <!-- MOTIVO -->
