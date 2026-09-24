@@ -362,27 +362,64 @@ public class precrmService {
      return destino;
  }
     
-    public void actualizarTelefonoAlterno(
-            Long pkSospechoso,
-            String telefonoAlterno) {
+//=========================================================
+//ACTUALIZAR TELEFONO ALTERNO
+//=========================================================
 
-        precrmSospechoso sospechoso =
-            sospechosoRepository
-                .findById(pkSospechoso)
-                .orElseThrow(() ->
-                    new RuntimeException(
-                        "No se encontró el sospechoso."
-                    )
-                );
+public void actualizarTelefonoAlterno(
 
-        sospechoso.setTelefonoAlterno(
-            telefonoAlterno
-        );
+      Long pkSospechoso,
 
-        sospechosoRepository.save(
-            sospechoso
-        );
-    }
+      String telefonoAlterno,
+
+      String usuario) {
+
+
+  // =====================================================
+  // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
+  // =====================================================
+
+  if (!usuarioPuedeConsultarSospechoso(
+          pkSospechoso,
+          usuario
+      )) {
+
+      throw new IllegalArgumentException(
+          "No tiene permiso para modificar "
+          + "este sospechoso."
+      );
+  }
+
+
+  // =====================================================
+  // OBTENER SOSPECHOSO
+  // =====================================================
+
+  precrmSospechoso sospechoso =
+      sospechosoRepository
+          .findById(
+              pkSospechoso
+          )
+          .orElseThrow(
+              () -> new RuntimeException(
+                  "No se encontró el sospechoso."
+              )
+          );
+
+
+  // =====================================================
+  // ACTUALIZAR TELEFONO
+  // =====================================================
+
+  sospechoso.setTelefonoAlterno(
+      telefonoAlterno
+  );
+
+
+  sospechosoRepository.save(
+      sospechoso
+  );
+}
 
 
     // =========================================================
@@ -2122,12 +2159,18 @@ return sospechosos;
 
 
  // =========================================================
- // CONTAR SOSPECHOSOS POR ESTATUS Y USUARIO
+ // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
  // =========================================================
 
- public long contarSospechososPorEstatus(
-         String usuario,
-         String estatus) {
+ public boolean usuarioPuedeConsultarSospechoso(
+         Long pkSospechoso,
+         String usuario) {
+
+
+     if (pkSospechoso == null) {
+
+         return false;
+     }
 
 
      usuario =
@@ -2141,15 +2184,15 @@ return sospechosos;
          || usuario.isEmpty()
      ) {
 
-         return 0;
+         return false;
      }
 
 
      return sospechosoRepository
-         .contarSospechososPorEstatusYUsuario(
-             estatus,
+         .contarSospechosoPorUsuario(
+             pkSospechoso,
              usuario
-         );
+         ) > 0;
  }
  
  
@@ -2284,7 +2327,25 @@ public void actualizarEstatusSospechoso(
         String nuevoEstatus,
         String usuario,
         String origenCambio) {
+	
+    // =====================================================
+    // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
+    // =====================================================
 
+    if (!usuarioPuedeConsultarSospechoso(
+            pkSospechoso,
+            usuario
+        )) {
+
+        throw new IllegalArgumentException(
+            "No tiene permiso para cambiar "
+            + "el estatus de este sospechoso."
+        );
+    }
+    
+    // =====================================================
+    // OBTENER SOSPECHOSO
+    // =====================================================
 
 	precrmSospechoso sospechoso =
             sospechosoRepository
@@ -2755,6 +2816,21 @@ public void guardarGestion(
      LocalDateTime fechaProximoSeguimiento,
      LocalDateTime fechaCita,
      String usuario) {
+	
+    // =====================================================
+    // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
+    // =====================================================
+
+    if (!usuarioPuedeConsultarSospechoso(
+            pkSospechoso,
+            usuario
+        )) {
+
+        throw new IllegalArgumentException(
+            "No tiene permiso para registrar "
+            + "gestiones sobre este sospechoso."
+        );
+    }
 
 
  // =====================================================
@@ -2928,6 +3004,36 @@ obtenerHistorialDescargas() {
  return reporteDescargaRepository
      .findAllByOrderByFechaDescargaDesc();
 
+}
+
+//=========================================================
+//OBTENER HISTORIAL DE DESCARGAS POR USUARIO
+//=========================================================
+
+public List<precrmReporteDescarga>
+obtenerHistorialDescargas(
+     String usuario) {
+
+
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
+
+
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
+
+     return new ArrayList<>();
+ }
+
+
+ return reporteDescargaRepository
+     .findByUsuarioOrderByFechaDescargaDesc(
+         usuario
+     );
 }
 
 //=========================================================
@@ -4187,6 +4293,32 @@ obtenerIncidenciasUltimoProcesamiento(
          ultimaCarga.getPkCarga(),
          resultados
      );
+}
+
+public long contarSospechososPorEstatus(
+        String usuario,
+        String estatus) {
+
+    usuario =
+        normalizarUsuarioPRECRM(
+            usuario
+        );
+
+    if (
+        usuario == null
+        || usuario.isEmpty()
+        || estatus == null
+        || estatus.trim().isEmpty()
+    ) {
+
+        return 0;
+    }
+
+    return sospechosoRepository
+        .contarSospechososPorEstatusYUsuario(
+            estatus.trim(),
+            usuario
+        );
 }
 
 }

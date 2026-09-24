@@ -209,6 +209,38 @@ public interface precrmSospechosoRepository
     	    LocalDateTime fechaFin
     	);
     	
+    	// =====================================================
+    	// CONTAR SOSPECHOSOS POR ESTATUS Y USUARIO
+    	// =====================================================
+
+    	@Query(
+    	    value =
+    	        "SELECT COUNT(*) " +
+    	        "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
+
+    	        "INNER JOIN SIB.TBL_PRECRM_CARGA_DETALLE D " +
+    	        "ON D.PK_DETALLE = S.FK_CARGA_DETALLE " +
+
+    	        "INNER JOIN SIB.TBL_PRECRM_CARGA C " +
+    	        "ON C.PK_CARGA = D.FK_CARGA " +
+
+    	        "WHERE S.ACTIVO = 1 " +
+
+    	        "AND UPPER(S.ESTATUS) = UPPER(:estatus) " +
+
+    	        "AND LOWER(C.USUARIO_PROCESO) = LOWER(:usuario)",
+    	    nativeQuery = true
+    	)
+    	long contarSospechososPorEstatusYUsuario(
+
+    	        @Param("estatus")
+    	        String estatus,
+
+    	        @Param("usuario")
+    	        String usuario
+
+    	);
+    	
     	@Query(
     		    value =
     		        "SELECT COUNT(*) " +
@@ -220,17 +252,15 @@ public interface precrmSospechosoRepository
     		        "INNER JOIN SIB.TBL_PRECRM_CARGA C " +
     		        "ON C.PK_CARGA = D.FK_CARGA " +
 
-    		        "WHERE S.ACTIVO = 1 " +
-
-    		        "AND S.ESTATUS = :estatus " +
-
+    		        "WHERE S.PK_SOSPECHOSO = :pkSospechoso " +
+    		        "AND S.ACTIVO = 1 " +
     		        "AND LOWER(C.USUARIO_PROCESO) = LOWER(:usuario)",
     		    nativeQuery = true
     		)
-    		long contarSospechososPorEstatusYUsuario(
+    		long contarSospechosoPorUsuario(
 
-    		        @Param("estatus")
-    		        String estatus,
+    		        @Param("pkSospechoso")
+    		        Long pkSospechoso,
 
     		        @Param("usuario")
     		        String usuario

@@ -734,159 +734,189 @@ public class precrmController {
 
 
         model.addAttribute(
-            "sospechosos",
-            precrmService
-                .obtenerSospechososActivos()
-        );
+        	    "sospechosos",
+        	    precrmService
+        	        .buscarSospechosos(
+        	            usuario,
+        	            null,
+        	            null,
+        	            null,
+        	            null,
+        	            null,
+        	            null
+        	        )
+        	);
 
 
         return "CRM/precrmDetalleSos";
     }
  
-//=========================================================
-//DETALLE DEL SOSPECHOSO
-//ACCESO DESDE LA TABLA
-//=========================================================
-    @GetMapping("/detallesospechosos/{pkSospechoso}")
-    public String mostrarDetalleSospechosoSeleccionado(
+  //=========================================================
+ // DETALLE DEL SOSPECHOSO
+ // ACCESO DESDE LA TABLA
+ //=========================================================
 
-            @PathVariable("pkSospechoso")
-            Long pkSospechoso,
+ @GetMapping("/detallesospechosos/{pkSospechoso}")
+ public String mostrarDetalleSospechosoSeleccionado(
 
-            Model model,
+         @PathVariable("pkSospechoso")
+         Long pkSospechoso,
 
-            Principal principal) {
+         Model model,
 
-
-        // =====================================================
-        // OBTENER USUARIO AUTENTICADO
-        // =====================================================
-
-        String usuario =
-                principal != null
-                ? principal.getName()
-                : null;
+         Principal principal) {
 
 
-        // =====================================================
-        // VALIDAR ACCESO A LA FUNCIONALIDAD DETALLE
-        // =====================================================
+     // =====================================================
+     // OBTENER USUARIO AUTENTICADO
+     // =====================================================
 
-        if (!precrmService.tieneAcceso(
-                usuario,
-                "DETALLE")) {
-
-            return "redirect:/precrm";
-        }
+     String usuario =
+             principal != null
+             ? principal.getName()
+             : null;
 
 
-        // =====================================================
-        // CATALOGO GENERAL
-        // =====================================================
+     // =====================================================
+     // VALIDAR ACCESO A LA FUNCIONALIDAD DETALLE
+     // =====================================================
 
-        model.addAttribute(
-            "catalogo",
-            CATALOGO_CRM
-        );
+     if (!precrmService.tieneAcceso(
+             usuario,
+             "DETALLE")) {
 
-
-        // =====================================================
-        // OBTENER SOSPECHOSO
-        // =====================================================
-
-        precrmSospechoso sospechoso =
-                precrmService
-                    .obtenerSospechosoPorId(
-                        pkSospechoso
-                    );
+         return "redirect:/precrm";
+     }
 
 
-        // =====================================================
-        // SIGUIENTE ESTATUS
-        // =====================================================
+     // =====================================================
+     // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
+     // =====================================================
 
-        String siguienteEstatus =
-                precrmService
-                    .obtenerSiguienteEstatusPantalla(
-                        sospechoso.getEstatus()
-                    );
+     if (!precrmService
+             .usuarioPuedeConsultarSospechoso(
+                 pkSospechoso,
+                 usuario
+             )) {
 
-
-        // =====================================================
-        // GESTIONES
-        // =====================================================
-
-        List<precrmGestion> gestiones =
-                precrmService
-                    .obtenerGestionesSospechoso(
-                        pkSospechoso
-                    );
+         return "redirect:/precrm/detallesospechosos";
+     }
 
 
-        // =====================================================
-        // HISTORIAL DE ESTATUS
-        // =====================================================
+     // =====================================================
+     // CATALOGO GENERAL
+     // =====================================================
 
-        List<precrmHistorialEstatus> historialEstatus =
-                precrmService
-                    .obtenerHistorialEstatusSospechoso(
-                        pkSospechoso
-                    );
-
-
-        // =====================================================
-        // DATOS PARA LA PANTALLA
-        // =====================================================
-
-        model.addAttribute(
-            "sospechoso",
-            sospechoso
-        );
+     model.addAttribute(
+         "catalogo",
+         CATALOGO_CRM
+     );
 
 
-        model.addAttribute(
-            "siguienteEstatus",
-            siguienteEstatus
-        );
+     // =====================================================
+     // OBTENER SOSPECHOSO
+     // =====================================================
+
+     precrmSospechoso sospechoso =
+             precrmService
+                 .obtenerSospechosoPorId(
+                     pkSospechoso
+                 );
 
 
-        model.addAttribute(
-            "gestiones",
-            gestiones
-        );
+     // =====================================================
+     // SIGUIENTE ESTATUS
+     // =====================================================
+
+     String siguienteEstatus =
+             precrmService
+                 .obtenerSiguienteEstatusPantalla(
+                     sospechoso.getEstatus()
+                 );
 
 
-        model.addAttribute(
-            "historialEstatus",
-            historialEstatus
-        );
+     // =====================================================
+     // GESTIONES
+     // =====================================================
+
+     List<precrmGestion> gestiones =
+             precrmService
+                 .obtenerGestionesSospechoso(
+                     pkSospechoso
+                 );
 
 
-        // =====================================================
-        // LISTA DE SOSPECHOSOS
-        // POR AHORA SIGUE MOSTRANDO TODOS LOS ACTIVOS
-        // =====================================================
+     // =====================================================
+     // HISTORIAL DE ESTATUS
+     // =====================================================
 
-        model.addAttribute(
-            "sospechosos",
-            precrmService
-                .obtenerSospechososActivos()
-        );
-
-
-        // =====================================================
-        // CATALOGO DE TIPOS DE GESTION
-        // =====================================================
-
-        model.addAttribute(
-            "tiposGestion",
-            precrmService
-                .obtenerTiposGestionActivos()
-        );
+     List<precrmHistorialEstatus> historialEstatus =
+             precrmService
+                 .obtenerHistorialEstatusSospechoso(
+                     pkSospechoso
+                 );
 
 
-        return "CRM/precrmDetalleSos";
-    }
+     // =====================================================
+     // DATOS PARA LA PANTALLA
+     // =====================================================
+
+     model.addAttribute(
+         "sospechoso",
+         sospechoso
+     );
+
+
+     model.addAttribute(
+         "siguienteEstatus",
+         siguienteEstatus
+     );
+
+
+     model.addAttribute(
+         "gestiones",
+         gestiones
+     );
+
+
+     model.addAttribute(
+         "historialEstatus",
+         historialEstatus
+     );
+
+
+     // =====================================================
+     // LISTA DE SOSPECHOSOS DEL USUARIO
+     // =====================================================
+
+     model.addAttribute(
+         "sospechosos",
+         precrmService
+             .buscarSospechosos(
+                 usuario,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null,
+                 null
+             )
+     );
+
+
+     // =====================================================
+     // CATALOGO DE TIPOS DE GESTION
+     // =====================================================
+
+     model.addAttribute(
+         "tiposGestion",
+         precrmService
+             .obtenerTiposGestionActivos()
+     );
+
+
+     return "CRM/precrmDetalleSos";
+ }
     
  // =========================================================
  // PANTALLA REPORTES Y CONSULTA
@@ -937,10 +967,12 @@ public class precrmController {
      // =====================================================
 
      model.addAttribute(
-         "historialDescargas",
-         precrmService
-             .obtenerHistorialDescargas()
-     );
+    		    "historialDescargas",
+    		    precrmService
+    		        .obtenerHistorialDescargas(
+    		            usuario
+    		        )
+    		);
 
 
      // =====================================================
@@ -955,77 +987,107 @@ public class precrmController {
  // GUARDAR TELEFONO ALTERNO DEL SOSPECHOSO
  // =========================================================
 
- @PostMapping("/detalle/telefonoAlterno")
- public String guardarTelefonoAlterno(
-         @RequestParam("pkSospechoso")
-         Long pkSospechoso,
+    @PostMapping("/detalle/telefonoAlterno")
+    public String guardarTelefonoAlterno(
 
-         @RequestParam("telefonoAlterno")
-         String telefonoAlterno,
+            @RequestParam("pkSospechoso")
+            Long pkSospechoso,
 
-         RedirectAttributes redirectAttributes) {
+            @RequestParam("telefonoAlterno")
+            String telefonoAlterno,
 
-     try {
+            Principal principal,
 
-         // Quitar espacios al inicio y final
-         telefonoAlterno =
-             telefonoAlterno != null
-                 ? telefonoAlterno.trim()
-                 : "";
+            RedirectAttributes redirectAttributes) {
 
 
-         // VALIDAR VACIO
-         if (telefonoAlterno.isEmpty()) {
-
-             redirectAttributes.addFlashAttribute(
-                 "errorTelefonoAlterno",
-                 "Debe ingresar un teléfono alterno."
-             );
-
-             return "redirect:/precrm/detallesospechosos/"
-                     + pkSospechoso;
-         }
+        try {
 
 
-         // VALIDAR LONGITUD
-         if (telefonoAlterno.length() > 20) {
+            // =====================================================
+            // OBTENER USUARIO AUTENTICADO
+            // =====================================================
 
-             redirectAttributes.addFlashAttribute(
-                 "errorTelefonoAlterno",
-                 "El teléfono alterno no puede exceder 20 caracteres."
-             );
-
-             return "redirect:/precrm/detallesospechosos/"
-                     + pkSospechoso;
-         }
+            String usuario =
+                    principal != null
+                    ? principal.getName()
+                    : null;
 
 
-         // GUARDAR
-         precrmService.actualizarTelefonoAlterno(
-             pkSospechoso,
-             telefonoAlterno
-         );
+            // =====================================================
+            // QUITAR ESPACIOS AL INICIO Y FINAL
+            // =====================================================
+
+            telefonoAlterno =
+                telefonoAlterno != null
+                    ? telefonoAlterno.trim()
+                    : "";
 
 
-         redirectAttributes.addFlashAttribute(
-             "exitoTelefonoAlterno",
-             "Teléfono alterno registrado correctamente."
-         );
+            // =====================================================
+            // VALIDAR VACIO
+            // =====================================================
+
+            if (telefonoAlterno.isEmpty()) {
+
+                redirectAttributes.addFlashAttribute(
+                    "errorTelefonoAlterno",
+                    "Debe ingresar un teléfono alterno."
+                );
+
+                return "redirect:/precrm/detallesospechosos/"
+                        + pkSospechoso;
+            }
 
 
-     } catch (Exception e) {
+            // =====================================================
+            // VALIDAR LONGITUD
+            // =====================================================
 
-         // NO MOSTRAR EL ERROR SQL COMPLETO
-         redirectAttributes.addFlashAttribute(
-             "errorTelefonoAlterno",
-             "No fue posible guardar el teléfono alterno."
-         );
-     }
+            if (telefonoAlterno.length() > 20) {
+
+                redirectAttributes.addFlashAttribute(
+                    "errorTelefonoAlterno",
+                    "El teléfono alterno no puede exceder 20 caracteres."
+                );
+
+                return "redirect:/precrm/detallesospechosos/"
+                        + pkSospechoso;
+            }
 
 
-     return "redirect:/precrm/detallesospechosos/"
-             + pkSospechoso;
- }
+            // =====================================================
+            // GUARDAR
+            // =====================================================
+
+            precrmService.actualizarTelefonoAlterno(
+                pkSospechoso,
+                telefonoAlterno,
+                usuario
+            );
+
+
+            redirectAttributes.addFlashAttribute(
+                "exitoTelefonoAlterno",
+                "Teléfono alterno registrado correctamente."
+            );
+
+
+        } catch (Exception e) {
+
+
+            redirectAttributes.addFlashAttribute(
+                "errorTelefonoAlterno",
+                e.getMessage() != null
+                    ? e.getMessage()
+                    : "No fue posible guardar el teléfono alterno."
+            );
+        }
+
+
+        return "redirect:/precrm/detallesospechosos/"
+                + pkSospechoso;
+    }
  
 //=========================================================
 //GUARDAR GESTION DEL SOSPECHOSO
