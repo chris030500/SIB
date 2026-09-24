@@ -23,15 +23,16 @@ public interface precrmSospechosoRepository
     boolean existsByFkCargaDetalle(
         Long fkCargaDetalle
     );
-    
+
+
     // =====================================================
     // VALIDAR SI EL SOSPECHOSO YA ESTABA REGISTRADO
     // =====================================================
-    
+
     boolean existsByNombreIgnoreCaseAndTelefonoPrincipalAndActivo(
-            String nombre,
-            String telefonoPrincipal,
-            Integer activo
+        String nombre,
+        String telefonoPrincipal,
+        Integer activo
     );
 
 
@@ -47,6 +48,7 @@ public interface precrmSospechosoRepository
 
     // =====================================================
     // CONTAR POR ESTATUS
+    // GLOBAL
     // =====================================================
 
     long countByEstatusAndActivo(
@@ -56,7 +58,7 @@ public interface precrmSospechosoRepository
 
 
     // =====================================================
-    // BUSQUEDA CON FILTROS
+    // BUSQUEDA GLOBAL CON FILTROS
     // =====================================================
 
     @Query("""
@@ -114,7 +116,6 @@ public interface precrmSospechosoRepository
         ORDER BY s.fechaRegistro DESC
 
     """)
-
     List<precrmSospechoso> buscarSospechosos(
 
         @Param("folio")
@@ -139,131 +140,153 @@ public interface precrmSospechosoRepository
         LocalDateTime fechaFin
 
     );
-    
+
+
+    // =====================================================
+    // BUSCAR SOSPECHOSOS ASIGNADOS AL USUARIO
+    // =====================================================
+
     @Query(
-    	    value =
-    	        "SELECT S.* " +
-    	        "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
+        value =
+            "SELECT DISTINCT S.* " +
 
-    	        "INNER JOIN SIB.TBL_PRECRM_CARGA_DETALLE D " +
-    	        "ON D.PK_DETALLE = S.FK_CARGA_DETALLE " +
+            "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
 
-    	        "INNER JOIN SIB.TBL_PRECRM_CARGA C " +
-    	        "ON C.PK_CARGA = D.FK_CARGA " +
+            "INNER JOIN SIB.TBL_PRECRM_ASIGNACION A " +
+            "ON A.FK_SOSPECHOSO = S.PK_SOSPECHOSO " +
 
-    	        "WHERE S.ACTIVO = 1 " +
+            "WHERE S.ACTIVO = 1 " +
 
-    	        "AND LOWER(C.USUARIO_PROCESO) = LOWER(:usuario) " +
+            "AND A.ACTIVO = 1 " +
 
-    	        "AND (:folio IS NULL " +
-    	        "     OR S.FOLIO LIKE CONCAT('%', :folio, '%')) " +
+            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "    = LOWER(TRIM(:usuario)) " +
 
-    	        "AND (:nombre IS NULL " +
-    	        "     OR LOWER(S.NOMBRE) LIKE " +
-    	        "        LOWER(CONCAT('%', :nombre, '%'))) " +
+            "AND (:folio IS NULL " +
+            "     OR S.FOLIO LIKE " +
+            "        CONCAT('%', :folio, '%')) " +
 
-    	        "AND (:telefono IS NULL " +
-    	        "     OR S.TELEFONO_PRINCIPAL LIKE " +
-    	        "        CONCAT('%', :telefono, '%')) " +
+            "AND (:nombre IS NULL " +
+            "     OR LOWER(S.NOMBRE) LIKE " +
+            "        LOWER(CONCAT('%', :nombre, '%'))) " +
 
-    	        "AND (:clasificacion IS NULL " +
-    	        "     OR S.CLASIFICACION = :clasificacion) " +
+            "AND (:telefono IS NULL " +
+            "     OR S.TELEFONO_PRINCIPAL LIKE " +
+            "        CONCAT('%', :telefono, '%')) " +
 
-    	        "AND (:estatus IS NULL " +
-    	        "     OR S.ESTATUS = :estatus) " +
+            "AND (:clasificacion IS NULL " +
+            "     OR UPPER(S.CLASIFICACION) " +
+            "        = UPPER(:clasificacion)) " +
 
-    	        "AND (:fechaInicio IS NULL " +
-    	        "     OR S.FECHA_REGISTRO >= :fechaInicio) " +
+            "AND (:estatus IS NULL " +
+            "     OR UPPER(S.ESTATUS) " +
+            "        = UPPER(:estatus)) " +
 
-    	        "AND (:fechaFin IS NULL " +
-    	        "     OR S.FECHA_REGISTRO < :fechaFin) " +
+            "AND (:fechaInicio IS NULL " +
+            "     OR S.FECHA_REGISTRO >= :fechaInicio) " +
 
-    	        "ORDER BY S.FECHA_REGISTRO DESC",
-    	    nativeQuery = true
-    	)
-    	List<precrmSospechoso>
-    	buscarSospechososPorUsuario(
+            "AND (:fechaFin IS NULL " +
+            "     OR S.FECHA_REGISTRO < :fechaFin) " +
 
-    	    @Param("usuario")
-    	    String usuario,
+            "ORDER BY S.FECHA_REGISTRO DESC",
 
-    	    @Param("folio")
-    	    String folio,
+        nativeQuery = true
+    )
+    List<precrmSospechoso>
+    buscarSospechososPorUsuario(
 
-    	    @Param("nombre")
-    	    String nombre,
+        @Param("usuario")
+        String usuario,
 
-    	    @Param("telefono")
-    	    String telefono,
+        @Param("folio")
+        String folio,
 
-    	    @Param("clasificacion")
-    	    String clasificacion,
+        @Param("nombre")
+        String nombre,
 
-    	    @Param("estatus")
-    	    String estatus,
+        @Param("telefono")
+        String telefono,
 
-    	    @Param("fechaInicio")
-    	    LocalDateTime fechaInicio,
+        @Param("clasificacion")
+        String clasificacion,
 
-    	    @Param("fechaFin")
-    	    LocalDateTime fechaFin
-    	);
-    	
-    	// =====================================================
-    	// CONTAR SOSPECHOSOS POR ESTATUS Y USUARIO
-    	// =====================================================
+        @Param("estatus")
+        String estatus,
 
-    	@Query(
-    	    value =
-    	        "SELECT COUNT(*) " +
-    	        "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
+        @Param("fechaInicio")
+        LocalDateTime fechaInicio,
 
-    	        "INNER JOIN SIB.TBL_PRECRM_CARGA_DETALLE D " +
-    	        "ON D.PK_DETALLE = S.FK_CARGA_DETALLE " +
+        @Param("fechaFin")
+        LocalDateTime fechaFin
+    );
 
-    	        "INNER JOIN SIB.TBL_PRECRM_CARGA C " +
-    	        "ON C.PK_CARGA = D.FK_CARGA " +
 
-    	        "WHERE S.ACTIVO = 1 " +
+    // =====================================================
+    // CONTAR SOSPECHOSOS POR ESTATUS Y USUARIO ASIGNADO
+    // =====================================================
 
-    	        "AND UPPER(S.ESTATUS) = UPPER(:estatus) " +
+    @Query(
+        value =
+            "SELECT COUNT(DISTINCT S.PK_SOSPECHOSO) " +
 
-    	        "AND LOWER(C.USUARIO_PROCESO) = LOWER(:usuario)",
-    	    nativeQuery = true
-    	)
-    	long contarSospechososPorEstatusYUsuario(
+            "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
 
-    	        @Param("estatus")
-    	        String estatus,
+            "INNER JOIN SIB.TBL_PRECRM_ASIGNACION A " +
+            "ON A.FK_SOSPECHOSO = S.PK_SOSPECHOSO " +
 
-    	        @Param("usuario")
-    	        String usuario
+            "WHERE S.ACTIVO = 1 " +
 
-    	);
-    	
-    	@Query(
-    		    value =
-    		        "SELECT COUNT(*) " +
-    		        "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
+            "AND A.ACTIVO = 1 " +
 
-    		        "INNER JOIN SIB.TBL_PRECRM_CARGA_DETALLE D " +
-    		        "ON D.PK_DETALLE = S.FK_CARGA_DETALLE " +
+            "AND UPPER(S.ESTATUS) " +
+            "    = UPPER(:estatus) " +
 
-    		        "INNER JOIN SIB.TBL_PRECRM_CARGA C " +
-    		        "ON C.PK_CARGA = D.FK_CARGA " +
+            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "    = LOWER(TRIM(:usuario))",
 
-    		        "WHERE S.PK_SOSPECHOSO = :pkSospechoso " +
-    		        "AND S.ACTIVO = 1 " +
-    		        "AND LOWER(C.USUARIO_PROCESO) = LOWER(:usuario)",
-    		    nativeQuery = true
-    		)
-    		long contarSospechosoPorUsuario(
+        nativeQuery = true
+    )
+    long contarSospechososPorEstatusYUsuario(
 
-    		        @Param("pkSospechoso")
-    		        Long pkSospechoso,
+        @Param("estatus")
+        String estatus,
 
-    		        @Param("usuario")
-    		        String usuario
-    		);
+        @Param("usuario")
+        String usuario
+    );
+
+
+    // =====================================================
+    // VALIDAR QUE EL SOSPECHOSO PERTENEZCA AL USUARIO
+    // =====================================================
+
+    @Query(
+        value =
+            "SELECT COUNT(DISTINCT S.PK_SOSPECHOSO) " +
+
+            "FROM SIB.TBL_PRECRM_SOSPECHOSO S " +
+
+            "INNER JOIN SIB.TBL_PRECRM_ASIGNACION A " +
+            "ON A.FK_SOSPECHOSO = S.PK_SOSPECHOSO " +
+
+            "WHERE S.PK_SOSPECHOSO = :pkSospechoso " +
+
+            "AND S.ACTIVO = 1 " +
+
+            "AND A.ACTIVO = 1 " +
+
+            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "    = LOWER(TRIM(:usuario))",
+
+        nativeQuery = true
+    )
+    long contarSospechosoPorUsuario(
+
+        @Param("pkSospechoso")
+        Long pkSospechoso,
+
+        @Param("usuario")
+        String usuario
+    );
 
 }

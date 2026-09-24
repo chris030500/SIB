@@ -32,13 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaDetalleRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmGestionRepository;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmHistorialEstatusRepository;
 import ahorrosbienestar.sib.std.CRM.model.precrmHistorialEstatus;
 import ahorrosbienestar.sib.std.CRM.model.precrmGestion;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmSospechosoRepository;
 import ahorrosbienestar.sib.std.CRM.dto.precrmRegistroDTO;
 import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
 import ahorrosbienestar.sib.std.CRM.model.precrmCargaDetalle;
@@ -53,8 +48,13 @@ import ahorrosbienestar.sib.std.CRM.model.precrmSucursalConfig;
 import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
 import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
 import ahorrosbienestar.sib.std.CRM.model.precrmTipoGestion;
-import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioRolRepository;
+import ahorrosbienestar.sib.std.CRM.model.precrmAsignacion;
 
+import ahorrosbienestar.sib.std.CRM.Repository.precrmUsuarioRolRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaDetalleRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmCargaRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmGestionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmHistorialEstatusRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmCatalogoReporteRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmReporteDescargaRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmFuncionalidadRepository;
@@ -64,6 +64,8 @@ import ahorrosbienestar.sib.std.CRM.Repository.precrmSucursalConfigRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmClasificacionRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmEstatusRepository;
 import ahorrosbienestar.sib.std.CRM.Repository.precrmTipoGestionRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmSospechosoRepository;
+import ahorrosbienestar.sib.std.CRM.Repository.precrmAsignacionRepository;
 
 
 
@@ -91,6 +93,8 @@ public class precrmService {
     private final precrmUsuarioPermisoRepository usuarioPermisoRepository;
     
     private final precrmUsuarioRolRepository usuarioRolRepository;
+    
+    private final precrmAsignacionRepository asignacionRepository;
 
     @Autowired
     private precrmGestionRepository gestionRepository;
@@ -119,7 +123,8 @@ public class precrmService {
             precrmEstatusRepository estatusRepository,
             precrmTipoGestionRepository tipoGestionRepository,
             precrmUsuarioPermisoRepository usuarioPermisoRepository,
-            precrmUsuarioRolRepository usuarioRolRepository) {
+            precrmUsuarioRolRepository usuarioRolRepository,
+            precrmAsignacionRepository asignacionRepository) {
 
         this.cargaRepository =
                 cargaRepository;
@@ -144,6 +149,9 @@ public class precrmService {
         
         this.usuarioRolRepository =
                 usuarioRolRepository;
+        
+        this.asignacionRepository =
+                asignacionRepository;
         
         System.out.println(
         	    "PRECRM SERVICE CLASS = "
@@ -1222,7 +1230,8 @@ public void actualizarTelefonoAlterno(
         	    )) {
 
         	    insertarSospechoso(
-        	        detalle
+        	        detalle,
+        	        usuario
         	    );
         	}
         }
@@ -1315,7 +1324,8 @@ public void actualizarTelefonoAlterno(
     // =========================================================
 
     private void insertarSospechoso(
-    		precrmCargaDetalle detalle) {
+            precrmCargaDetalle detalle,
+            String usuarioProceso) {
 
 
         /*
@@ -1464,18 +1474,25 @@ public void actualizarTelefonoAlterno(
 
 
         sospechoso =
-            sospechosoRepository
-                .saveAndFlush(
-                    sospechoso
-                );
+        	    sospechosoRepository
+        	        .saveAndFlush(
+        	            sospechoso
+        	        );
 
 
-        System.out.println(
-            "SOSPECHOSO INSERTADO -> PK: "
-            + sospechoso.getPkSospechoso()
-            + " | FOLIO: "
-            + sospechoso.getFolio()
-        );
+        	asignarSospechosoPorNombreRegistro(
+        	    sospechoso.getPkSospechoso(),
+        	    detalle.getNombreRegistro(),
+        	    usuarioProceso
+        	);
+
+
+        	System.out.println(
+        	    "SOSPECHOSO INSERTADO -> PK: "
+        	    + sospechoso.getPkSospechoso()
+        	    + " | FOLIO: "
+        	    + sospechoso.getFolio()
+        	);
     }
     
  // =========================================================
@@ -4319,6 +4336,150 @@ public long contarSospechososPorEstatus(
             estatus.trim(),
             usuario
         );
+}
+
+//=========================================================
+//OBTENER USUARIO SIB POR NOMBRE DEL COLABORADOR
+//=========================================================
+
+public String obtenerUsuarioPorNombreRegistro(
+     String nombreRegistro) {
+
+
+ if (
+     nombreRegistro == null
+     || nombreRegistro.trim().isEmpty()
+ ) {
+
+     return null;
+ }
+
+
+ return asignacionRepository
+     .obtenerUsuarioActivoPorNombre(
+         nombreRegistro.trim()
+     )
+     .map(
+         usuario ->
+             usuario.trim().toLowerCase()
+     )
+     .orElse(null);
+}
+
+//=========================================================
+//ASIGNAR SOSPECHOSO SEGUN NOMBRE DEL REGISTRO
+//=========================================================
+
+private void asignarSospechosoPorNombreRegistro(
+
+     Long pkSospechoso,
+
+     String nombreRegistro,
+
+     String usuarioProceso) {
+
+
+ // =====================================================
+ // OBTENER USUARIO SIB DEL COLABORADOR
+ // =====================================================
+
+ String usuarioAsignado =
+     obtenerUsuarioPorNombreRegistro(
+         nombreRegistro
+     );
+
+
+ if (
+     usuarioAsignado == null
+     || usuarioAsignado.trim().isEmpty()
+ ) {
+
+     throw new IllegalArgumentException(
+         "No se encontró un usuario activo en SIB "
+         + "para el colaborador: "
+         + nombreRegistro
+     );
+ }
+
+
+ // =====================================================
+ // EVITAR DUPLICAR ASIGNACION
+ // =====================================================
+
+ boolean yaAsignado =
+     asignacionRepository
+         .existsByFkSospechosoAndUsuarioAsignadoAndActivo(
+             pkSospechoso,
+             usuarioAsignado,
+             1
+         );
+
+
+ if (yaAsignado) {
+
+     return;
+ }
+
+
+ // =====================================================
+ // CREAR ASIGNACION
+ // =====================================================
+
+ precrmAsignacion asignacion =
+     new precrmAsignacion();
+
+
+ asignacion.setFkSospechoso(
+     pkSospechoso
+ );
+
+
+ asignacion.setUsuarioAsignado(
+     usuarioAsignado
+ );
+
+
+ asignacion.setActivo(
+     1
+ );
+
+
+ asignacion.setFechaAsignacion(
+     LocalDateTime.now()
+ );
+
+
+ asignacion.setUsuarioAsigna(
+     usuarioProceso != null
+         ? usuarioProceso.trim().toLowerCase()
+         : "sistema"
+ );
+
+
+ asignacion.setFechaFin(
+     null
+ );
+
+
+ asignacion.setUsuarioModificacion(
+     null
+ );
+
+
+ asignacionRepository
+     .saveAndFlush(
+         asignacion
+     );
+
+
+ System.out.println(
+     "ASIGNACION PRECRM -> SOSPECHOSO: "
+     + pkSospechoso
+     + " | NOMBRE REGISTRO: "
+     + nombreRegistro
+     + " | USUARIO: "
+     + usuarioAsignado
+ );
 }
 
 }
