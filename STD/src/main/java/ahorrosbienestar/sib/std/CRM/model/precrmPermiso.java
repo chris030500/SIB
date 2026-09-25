@@ -9,7 +9,10 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_PERMISO")
+@Table(
+    name = "TBL_PRECRM_PERMISO",
+    schema = "SIB"
+)
 public class precrmPermiso {
 
 
@@ -18,7 +21,9 @@ public class precrmPermiso {
     // =========================================================
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_PERMISO")
     private Long pkPermiso;
 
@@ -28,7 +33,7 @@ public class precrmPermiso {
     // =========================================================
 
     @Column(
-        name = "CLAVE_PERMISO",
+        name = "VC_CLAVE_PERMISO",
         length = 50,
         nullable = false,
         unique = true
@@ -41,7 +46,7 @@ public class precrmPermiso {
     // =========================================================
 
     @Column(
-        name = "NOMBRE_PERMISO",
+        name = "VC_NOMBRE_PERMISO",
         length = 100,
         nullable = false
     )
@@ -53,7 +58,7 @@ public class precrmPermiso {
     // =========================================================
 
     @Column(
-        name = "ACTIVO",
+        name = "I_ACTIVO",
         nullable = false
     )
     private Integer activo;

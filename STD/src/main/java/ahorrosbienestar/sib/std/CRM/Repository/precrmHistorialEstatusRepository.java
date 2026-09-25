@@ -17,4 +17,5 @@ public interface precrmHistorialEstatusRepository
         findByFkSospechosoOrderByFechaCambioDesc(
             Long fkSospechoso
         );
+
 }

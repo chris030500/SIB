@@ -9,92 +9,160 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+
 @Entity
-@Table(name = "TBL_CAT_PRECRM_CLASIFICACION")
+@Table(
+    name = "TBL_CAT_PRECRM_CLASIFICACION",
+    schema = "SIB"
+)
 public class precrmClasificacion {
 
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_CLASIFICACION")
     private Integer pkClasificacion;
 
-    @Column(name = "CLAVE")
+
+    @Column(
+        name = "VC_CLAVE",
+        nullable = false,
+        length = 50
+    )
     private String clave;
 
-    @Column(name = "NOMBRE")
+
+    @Column(
+        name = "VC_NOMBRE",
+        nullable = false,
+        length = 100
+    )
     private String nombre;
 
-    @Column(name = "DESCRIPCION")
+
+    @Column(
+        name = "VC_DESCRIPCION",
+        length = 255
+    )
     private String descripcion;
 
-    @Column(name = "ORDEN")
+
+    @Column(
+        name = "I_ORDEN",
+        nullable = false
+    )
     private Integer orden;
 
-    @Column(name = "ACTIVO")
+
+    @Column(
+        name = "I_ACTIVO",
+        nullable = false
+    )
     private Integer activo;
 
-    @Column(name = "FECHA_REGISTRO")
+
+    @Column(
+        name = "DT_FECHA_REGISTRO",
+        nullable = false
+    )
     private LocalDateTime fechaRegistro;
 
-    @Column(name = "FECHA_ACTUALIZACION")
+
+    @Column(
+        name = "DT_FECHA_ACTUALIZACION"
+    )
     private LocalDateTime fechaActualizacion;
 
+
+    // =========================================================
+    // GETTERS Y SETTERS
+    // =========================================================
 
     public Integer getPkClasificacion() {
         return pkClasificacion;
     }
 
-    public void setPkClasificacion(Integer pkClasificacion) {
-        this.pkClasificacion = pkClasificacion;
+    public void setPkClasificacion(
+            Integer pkClasificacion) {
+
+        this.pkClasificacion =
+            pkClasificacion;
     }
+
 
     public String getClave() {
         return clave;
     }
 
-    public void setClave(String clave) {
-        this.clave = clave;
+    public void setClave(
+            String clave) {
+
+        this.clave =
+            clave;
     }
+
 
     public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombre(
+            String nombre) {
+
+        this.nombre =
+            nombre;
     }
+
 
     public String getDescripcion() {
         return descripcion;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescripcion(
+            String descripcion) {
+
+        this.descripcion =
+            descripcion;
     }
+
 
     public Integer getOrden() {
         return orden;
     }
 
-    public void setOrden(Integer orden) {
-        this.orden = orden;
+    public void setOrden(
+            Integer orden) {
+
+        this.orden =
+            orden;
     }
+
 
     public Integer getActivo() {
         return activo;
     }
 
-    public void setActivo(Integer activo) {
-        this.activo = activo;
+    public void setActivo(
+            Integer activo) {
+
+        this.activo =
+            activo;
     }
+
 
     public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
+    public void setFechaRegistro(
+            LocalDateTime fechaRegistro) {
+
+        this.fechaRegistro =
+            fechaRegistro;
     }
+
 
     public LocalDateTime getFechaActualizacion() {
         return fechaActualizacion;
@@ -104,6 +172,7 @@ public class precrmClasificacion {
             LocalDateTime fechaActualizacion) {
 
         this.fechaActualizacion =
-                fechaActualizacion;
+            fechaActualizacion;
     }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.CRM.model.precrmCarga;
 
+
 @Repository
 public interface precrmCargaRepository
         extends JpaRepository<precrmCarga, Long> {
@@ -15,18 +16,21 @@ public interface precrmCargaRepository
     boolean existsByNombreArchivo(
         String nombreArchivo
     );
-    
+
+
     boolean existsByNombreArchivoAndUsuarioProceso(
-            String nombreArchivo,
-            String usuarioProceso
+        String nombreArchivo,
+        String usuarioProceso
     );
 
 
     Optional<precrmCarga>
         findTopByOrderByFechaProcesamientoDesc();
-        
-        Optional<precrmCarga>
+
+
+    Optional<precrmCarga>
         findTopByUsuarioProcesoOrderByFechaProcesamientoDesc(
             String usuarioProceso
         );
+
 }

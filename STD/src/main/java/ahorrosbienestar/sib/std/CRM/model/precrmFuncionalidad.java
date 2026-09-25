@@ -9,7 +9,10 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_FUNCIONALIDAD")
+@Table(
+    name = "TBL_PRECRM_FUNCIONALIDAD",
+    schema = "SIB"
+)
 public class precrmFuncionalidad {
 
 
@@ -18,7 +21,9 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_FUNCIONALIDAD")
     private Long pkFuncionalidad;
 
@@ -28,7 +33,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "CLAVE_FUNCIONALIDAD",
+        name = "VC_CLAVE_FUNCIONALIDAD",
         length = 50,
         nullable = false,
         unique = true
@@ -41,7 +46,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "NOMBRE_FUNCIONALIDAD",
+        name = "VC_NOMBRE_FUNCIONALIDAD",
         length = 150,
         nullable = false
     )
@@ -53,7 +58,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "DESCRIPCION",
+        name = "VC_DESCRIPCION",
         length = 500
     )
     private String descripcion;
@@ -64,7 +69,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "RUTA",
+        name = "VC_RUTA",
         length = 255
     )
     private String ruta;
@@ -75,7 +80,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "ACTIVO",
+        name = "I_ACTIVO",
         nullable = false
     )
     private Integer activo;
@@ -86,7 +91,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     @Column(
-        name = "ORDEN",
+        name = "I_ORDEN",
         nullable = false
     )
     private Integer orden;
@@ -106,9 +111,7 @@ public class precrmFuncionalidad {
     // =========================================================
 
     public Long getPkFuncionalidad() {
-
         return pkFuncionalidad;
-
     }
 
 
@@ -117,14 +120,11 @@ public class precrmFuncionalidad {
 
         this.pkFuncionalidad =
             pkFuncionalidad;
-
     }
 
 
     public String getClaveFuncionalidad() {
-
         return claveFuncionalidad;
-
     }
 
 
@@ -133,14 +133,11 @@ public class precrmFuncionalidad {
 
         this.claveFuncionalidad =
             claveFuncionalidad;
-
     }
 
 
     public String getNombreFuncionalidad() {
-
         return nombreFuncionalidad;
-
     }
 
 
@@ -149,14 +146,11 @@ public class precrmFuncionalidad {
 
         this.nombreFuncionalidad =
             nombreFuncionalidad;
-
     }
 
 
     public String getDescripcion() {
-
         return descripcion;
-
     }
 
 
@@ -165,14 +159,11 @@ public class precrmFuncionalidad {
 
         this.descripcion =
             descripcion;
-
     }
 
 
     public String getRuta() {
-
         return ruta;
-
     }
 
 
@@ -181,14 +172,11 @@ public class precrmFuncionalidad {
 
         this.ruta =
             ruta;
-
     }
 
 
     public Integer getActivo() {
-
         return activo;
-
     }
 
 
@@ -197,14 +185,11 @@ public class precrmFuncionalidad {
 
         this.activo =
             activo;
-
     }
 
 
     public Integer getOrden() {
-
         return orden;
-
     }
 
 
@@ -213,7 +198,6 @@ public class precrmFuncionalidad {
 
         this.orden =
             orden;
-
     }
 
 }

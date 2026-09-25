@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.CRM.model.precrmUsuarioPermiso;
 
@@ -108,47 +108,60 @@ public interface precrmUsuarioPermisoRepository
         findByFkFuncionalidad(
             Long fkFuncionalidad
         );
-        
-     // =========================================================
-     // OBTENER RELACIONES POR PERMISO Y ESTATUS
-     // =========================================================
 
-     List<precrmUsuarioPermiso>
-         findByFkPermisoAndActivo(
-             Long fkPermiso,
-             Integer activo
-         );
-        
-     // =========================================================
-     // VALIDAR PERMISO POR CLAVES
-     // USUARIO + FUNCIONALIDAD + PERMISO
-     // =========================================================
 
-     @Query(
-         value =
-             "SELECT COUNT(*) " +
-             "FROM SIB.TBL_PRECRM_USUARIO_PERMISO UP " +
-             "INNER JOIN SIB.TBL_PRECRM_FUNCIONALIDAD F " +
-             "    ON F.PK_FUNCIONALIDAD = UP.FK_FUNCIONALIDAD " +
-             "INNER JOIN SIB.TBL_PRECRM_PERMISO P " +
-             "    ON P.PK_PERMISO = UP.FK_PERMISO " +
-             "WHERE UP.USUARIO = :usuario " +
-             "AND F.CLAVE_FUNCIONALIDAD = :funcionalidad " +
-             "AND P.CLAVE_PERMISO = :permiso " +
-             "AND UP.ACTIVO = 1 " +
-             "AND F.ACTIVO = 1 " +
-             "AND P.ACTIVO = 1",
-         nativeQuery = true
-     )
-     long contarPermisoActivo(
-         @Param("usuario")
-         String usuario,
+    // =========================================================
+    // OBTENER RELACIONES POR PERMISO Y ESTATUS
+    // =========================================================
 
-         @Param("funcionalidad")
-         String funcionalidad,
+    List<precrmUsuarioPermiso>
+        findByFkPermisoAndActivo(
+            Long fkPermiso,
+            Integer activo
+        );
 
-         @Param("permiso")
-         String permiso
-     );
+
+    // =========================================================
+    // VALIDAR PERMISO POR CLAVES
+    // USUARIO + FUNCIONALIDAD + PERMISO
+    // =========================================================
+
+    @Query(
+        value =
+            "SELECT COUNT(*) " +
+            "FROM SIB.TBL_PRECRM_USUARIO_PERMISO UP " +
+
+            "INNER JOIN SIB.TBL_PRECRM_FUNCIONALIDAD F " +
+            "    ON F.PK_FUNCIONALIDAD = UP.FK_FUNCIONALIDAD " +
+
+            "INNER JOIN SIB.TBL_PRECRM_PERMISO P " +
+            "    ON P.PK_PERMISO = UP.FK_PERMISO " +
+
+            "WHERE LOWER(TRIM(UP.VC_USUARIO)) " +
+            "    = LOWER(TRIM(:usuario)) " +
+
+            "AND F.VC_CLAVE_FUNCIONALIDAD = :funcionalidad " +
+
+            "AND P.VC_CLAVE_PERMISO = :permiso " +
+
+            "AND UP.I_ACTIVO = 1 " +
+
+            "AND F.I_ACTIVO = 1 " +
+
+            "AND P.I_ACTIVO = 1",
+
+        nativeQuery = true
+    )
+    long contarPermisoActivo(
+
+        @Param("usuario")
+        String usuario,
+
+        @Param("funcionalidad")
+        String funcionalidad,
+
+        @Param("permiso")
+        String permiso
+    );
 
 }

@@ -17,4 +17,5 @@ public interface precrmGestionRepository
         findByFkSospechosoOrderByFechaGestionDesc(
             Long fkSospechoso
         );
+
 }

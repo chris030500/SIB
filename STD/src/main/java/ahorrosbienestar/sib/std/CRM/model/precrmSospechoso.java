@@ -13,100 +13,174 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_SOSPECHOSO")
+@Table(
+    name = "TBL_PRECRM_SOSPECHOSO",
+    schema = "SIB"
+)
 public class precrmSospechoso {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_SOSPECHOSO")
     private Long pkSospechoso;
 
 
-    @Column(name = "FK_CARGA_DETALLE", nullable = false)
+    @Column(
+        name = "FK_CARGA_DETALLE",
+        nullable = false
+    )
     private Long fkCargaDetalle;
 
 
-    @Column(name = "FOLIO", nullable = false)
+    @Column(
+        name = "VC_FOLIO",
+        nullable = false,
+        length = 20
+    )
     private String folio;
 
 
-    @Column(name = "NOMBRE", nullable = false)
+    @Column(
+        name = "VC_NOMBRE",
+        nullable = false,
+        length = 200
+    )
     private String nombre;
 
 
-    @Column(name = "FECHA_NACIMIENTO")
+    @Column(
+        name = "DT_FECHA_NACIMIENTO"
+    )
     private LocalDate fechaNacimiento;
 
 
-    @Column(name = "TELEFONO_PRINCIPAL", nullable = false)
+    @Column(
+        name = "VC_TELEFONO_PRINCIPAL",
+        nullable = false,
+        length = 10
+    )
     private String telefonoPrincipal;
-    
-    @Column(name = "VC_TELEFONO_ALTERNO")
+
+
+    @Column(
+        name = "VC_TELEFONO_ALTERNO",
+        length = 20
+    )
     private String telefonoAlterno;
 
-    @Column(name = "CORREO")
+
+    @Column(
+        name = "VC_CORREO",
+        length = 150
+    )
     private String correo;
 
 
-    @Column(name = "CLASIFICACION")
+    @Column(
+        name = "VC_CLASIFICACION",
+        length = 50
+    )
     private String clasificacion;
 
 
-    @Column(name = "FUENTE_ORIGEN")
+    @Column(
+        name = "VC_FUENTE_ORIGEN",
+        length = 100
+    )
     private String fuenteOrigen;
 
 
-    @Column(name = "PRODUCTO_INTERES")
+    @Column(
+        name = "VC_PRODUCTO_INTERES",
+        length = 100
+    )
     private String productoInteres;
 
 
-    @Column(name = "MONTO_INTERES")
+    @Column(
+        name = "DC_MONTO_INTERES",
+        precision = 15,
+        scale = 2
+    )
     private BigDecimal montoInteres;
 
 
-    @Column(name = "OBSERVACIONES")
+    @Column(
+        name = "VC_OBSERVACIONES",
+        length = 500
+    )
     private String observaciones;
 
 
-    @Column(name = "SUCURSAL_ORIGEN")
+    @Column(
+        name = "VC_SUCURSAL_ORIGEN",
+        length = 150
+    )
     private String sucursalOrigen;
 
 
-    @Column(name = "ESTATUS", nullable = false)
+    @Column(
+        name = "VC_ESTATUS",
+        nullable = false,
+        length = 50
+    )
     private String estatus;
-    
-    @Column(name = "FECHA_INICIO_ETAPA")
+
+
+    @Column(
+        name = "DT_FECHA_INICIO_ETAPA"
+    )
     private LocalDateTime fechaInicioEtapa;
-    
-    @Column(name = "FECHA_PROXIMA_GESTION")
+
+
+    @Column(
+        name = "DT_FECHA_PROXIMA_GESTION"
+    )
     private LocalDateTime fechaProximaGestion;
 
-    @Column(name = "DIAS_RESTANTES")
+
+    @Column(
+        name = "I_DIAS_RESTANTES"
+    )
     private Integer diasRestantes;
 
-    @Column(name = "FECHA_ULTIMA_ACTUALIZACION")
+
+    @Column(
+        name = "DT_FECHA_ULTIMA_ACTUALIZACION"
+    )
     private LocalDateTime fechaUltimaActualizacion;
 
 
-    @Column(name = "FECHA_REGISTRO", nullable = false)
+    @Column(
+        name = "DT_FECHA_REGISTRO",
+        nullable = false
+    )
     private LocalDateTime fechaRegistro;
 
 
-    @Column(name = "ACTIVO", nullable = false)
+    @Column(
+        name = "I_ACTIVO",
+        nullable = false
+    )
     private Integer activo;
 
+
+    // =========================================================
+    // GETTERS Y SETTERS
+    // =========================================================
 
     public Long getPkSospechoso() {
         return pkSospechoso;
     }
 
-
     public void setPkSospechoso(
             Long pkSospechoso) {
 
         this.pkSospechoso =
-                pkSospechoso;
+            pkSospechoso;
     }
 
 
@@ -114,12 +188,11 @@ public class precrmSospechoso {
         return fkCargaDetalle;
     }
 
-
     public void setFkCargaDetalle(
             Long fkCargaDetalle) {
 
         this.fkCargaDetalle =
-                fkCargaDetalle;
+            fkCargaDetalle;
     }
 
 
@@ -127,12 +200,11 @@ public class precrmSospechoso {
         return folio;
     }
 
-
     public void setFolio(
             String folio) {
 
         this.folio =
-                folio;
+            folio;
     }
 
 
@@ -140,12 +212,11 @@ public class precrmSospechoso {
         return nombre;
     }
 
-
     public void setNombre(
             String nombre) {
 
         this.nombre =
-                nombre;
+            nombre;
     }
 
 
@@ -153,12 +224,11 @@ public class precrmSospechoso {
         return fechaNacimiento;
     }
 
-
     public void setFechaNacimiento(
             LocalDate fechaNacimiento) {
 
         this.fechaNacimiento =
-                fechaNacimiento;
+            fechaNacimiento;
     }
 
 
@@ -166,24 +236,23 @@ public class precrmSospechoso {
         return telefonoPrincipal;
     }
 
-
     public void setTelefonoPrincipal(
             String telefonoPrincipal) {
 
         this.telefonoPrincipal =
-                telefonoPrincipal;
+            telefonoPrincipal;
     }
-    
+
+
     public String getTelefonoAlterno() {
         return telefonoAlterno;
     }
-
 
     public void setTelefonoAlterno(
             String telefonoAlterno) {
 
         this.telefonoAlterno =
-        		telefonoAlterno;
+            telefonoAlterno;
     }
 
 
@@ -191,12 +260,11 @@ public class precrmSospechoso {
         return correo;
     }
 
-
     public void setCorreo(
             String correo) {
 
         this.correo =
-                correo;
+            correo;
     }
 
 
@@ -204,12 +272,11 @@ public class precrmSospechoso {
         return clasificacion;
     }
 
-
     public void setClasificacion(
             String clasificacion) {
 
         this.clasificacion =
-                clasificacion;
+            clasificacion;
     }
 
 
@@ -217,12 +284,11 @@ public class precrmSospechoso {
         return fuenteOrigen;
     }
 
-
     public void setFuenteOrigen(
             String fuenteOrigen) {
 
         this.fuenteOrigen =
-                fuenteOrigen;
+            fuenteOrigen;
     }
 
 
@@ -230,12 +296,11 @@ public class precrmSospechoso {
         return productoInteres;
     }
 
-
     public void setProductoInteres(
             String productoInteres) {
 
         this.productoInteres =
-                productoInteres;
+            productoInteres;
     }
 
 
@@ -243,12 +308,11 @@ public class precrmSospechoso {
         return montoInteres;
     }
 
-
     public void setMontoInteres(
             BigDecimal montoInteres) {
 
         this.montoInteres =
-                montoInteres;
+            montoInteres;
     }
 
 
@@ -256,12 +320,11 @@ public class precrmSospechoso {
         return observaciones;
     }
 
-
     public void setObservaciones(
             String observaciones) {
 
         this.observaciones =
-                observaciones;
+            observaciones;
     }
 
 
@@ -269,12 +332,11 @@ public class precrmSospechoso {
         return sucursalOrigen;
     }
 
-
     public void setSucursalOrigen(
             String sucursalOrigen) {
 
         this.sucursalOrigen =
-                sucursalOrigen;
+            sucursalOrigen;
     }
 
 
@@ -282,73 +344,59 @@ public class precrmSospechoso {
         return estatus;
     }
 
-
     public void setEstatus(
             String estatus) {
 
         this.estatus =
-                estatus;
+            estatus;
     }
-    
+
+
     public LocalDateTime getFechaInicioEtapa() {
-
         return fechaInicioEtapa;
-
     }
-
 
     public void setFechaInicioEtapa(
             LocalDateTime fechaInicioEtapa) {
 
         this.fechaInicioEtapa =
-                fechaInicioEtapa;
-
+            fechaInicioEtapa;
     }
-    
+
+
     public LocalDateTime getFechaProximaGestion() {
-
         return fechaProximaGestion;
-
     }
-
 
     public void setFechaProximaGestion(
             LocalDateTime fechaProximaGestion) {
 
         this.fechaProximaGestion =
-                fechaProximaGestion;
-
+            fechaProximaGestion;
     }
-    
+
+
     public Integer getDiasRestantes() {
-
         return diasRestantes;
-
     }
-
 
     public void setDiasRestantes(
             Integer diasRestantes) {
 
         this.diasRestantes =
-                diasRestantes;
-
+            diasRestantes;
     }
 
 
     public LocalDateTime getFechaUltimaActualizacion() {
-
         return fechaUltimaActualizacion;
-
     }
-
 
     public void setFechaUltimaActualizacion(
             LocalDateTime fechaUltimaActualizacion) {
 
         this.fechaUltimaActualizacion =
-                fechaUltimaActualizacion;
-
+            fechaUltimaActualizacion;
     }
 
 
@@ -356,12 +404,11 @@ public class precrmSospechoso {
         return fechaRegistro;
     }
 
-
     public void setFechaRegistro(
             LocalDateTime fechaRegistro) {
 
         this.fechaRegistro =
-                fechaRegistro;
+            fechaRegistro;
     }
 
 
@@ -369,11 +416,11 @@ public class precrmSospechoso {
         return activo;
     }
 
-
     public void setActivo(
             Integer activo) {
 
         this.activo =
-                activo;
+            activo;
     }
+
 }

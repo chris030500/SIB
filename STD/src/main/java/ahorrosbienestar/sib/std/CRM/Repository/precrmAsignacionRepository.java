@@ -19,23 +19,31 @@ public interface precrmAsignacionRepository
     // OBTENER USUARIO SIB A PARTIR DEL NOMBRE DEL COLABORADOR
     // =========================================================
 
-	@Query(
-		    value =
-		        "SELECT TRIM(U.VC_USUARIO) " +
-		        "FROM SIB.TBL_USUARIOS U " +
-		        "WHERE U.CH_ACTIVO = 1 " +
-		        "AND UPPER(" +
-		        "    REGEXP_REPLACE(TRIM(U.VC_NOMBRE), '[[:space:]]+', ' ')" +
-		        ") = UPPER(" +
-		        "    REGEXP_REPLACE(TRIM(:nombre), '[[:space:]]+', ' ')" +
-		        ") " +
-		        "LIMIT 1",
-		    nativeQuery = true
-		)
-		Optional<String> obtenerUsuarioActivoPorNombre(
-		    @Param("nombre")
-		    String nombre
-		);
+    @Query(
+        value =
+            "SELECT TRIM(U.VC_USUARIO) " +
+            "FROM SIB.TBL_USUARIOS U " +
+            "WHERE U.CH_ACTIVO = 1 " +
+            "AND UPPER(" +
+            "    REGEXP_REPLACE(" +
+            "        TRIM(U.VC_NOMBRE), " +
+            "        '[[:space:]]+', " +
+            "        ' '" +
+            "    )" +
+            ") = UPPER(" +
+            "    REGEXP_REPLACE(" +
+            "        TRIM(:nombre), " +
+            "        '[[:space:]]+', " +
+            "        ' '" +
+            "    )" +
+            ") " +
+            "LIMIT 1",
+        nativeQuery = true
+    )
+    Optional<String> obtenerUsuarioActivoPorNombre(
+        @Param("nombre")
+        String nombre
+    );
 
 
     // =========================================================

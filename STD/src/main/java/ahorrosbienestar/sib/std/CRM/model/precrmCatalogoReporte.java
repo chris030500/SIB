@@ -12,7 +12,10 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_CATALOGO_REPORTE")
+@Table(
+    name = "TBL_PRECRM_CATALOGO_REPORTE",
+    schema = "SIB"
+)
 public class precrmCatalogoReporte {
 
 
@@ -21,7 +24,9 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_REPORTE")
     private Long pkReporte;
 
@@ -31,7 +36,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "CLAVE_REPORTE",
+        name = "VC_CLAVE_REPORTE",
         length = 50,
         nullable = false,
         unique = true
@@ -44,7 +49,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "NOMBRE_REPORTE",
+        name = "VC_NOMBRE_REPORTE",
         length = 150,
         nullable = false
     )
@@ -56,7 +61,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "DESCRIPCION",
+        name = "VC_DESCRIPCION",
         length = 500
     )
     private String descripcion;
@@ -67,7 +72,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "TIPO_REPORTE",
+        name = "VC_TIPO_REPORTE",
         length = 50
     )
     private String tipoReporte;
@@ -78,7 +83,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "ACTIVO",
+        name = "I_ACTIVO",
         nullable = false
     )
     private Integer activo;
@@ -89,7 +94,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "ORDEN",
+        name = "I_ORDEN",
         nullable = false
     )
     private Integer orden;
@@ -100,7 +105,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "FECHA_ALTA",
+        name = "DT_FECHA_ALTA",
         nullable = false
     )
     private LocalDateTime fechaAlta;
@@ -111,7 +116,7 @@ public class precrmCatalogoReporte {
     // =========================================================
 
     @Column(
-        name = "USUARIO_ALTA",
+        name = "VC_USUARIO_ALTA",
         length = 100
     )
     private String usuarioAlta;

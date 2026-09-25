@@ -15,7 +15,10 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_REPORTE_DESCARGA")
+@Table(
+    name = "TBL_PRECRM_REPORTE_DESCARGA",
+    schema = "SIB"
+)
 public class precrmReporteDescarga {
 
 
@@ -24,7 +27,9 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_DESCARGA")
     private Long pkDescarga;
 
@@ -61,7 +66,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "USUARIO",
+        name = "VC_USUARIO",
         length = 100,
         nullable = false
     )
@@ -73,7 +78,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "FECHA_DESCARGA",
+        name = "DT_FECHA_DESCARGA",
         nullable = false
     )
     private LocalDateTime fechaDescarga;
@@ -84,7 +89,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "NOMBRE_ARCHIVO",
+        name = "VC_NOMBRE_ARCHIVO",
         length = 255
     )
     private String nombreArchivo;
@@ -95,7 +100,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "ESTATUS_DESCARGA",
+        name = "VC_ESTATUS_DESCARGA",
         length = 20,
         nullable = false
     )
@@ -107,7 +112,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "TOTAL_REGISTROS"
+        name = "I_TOTAL_REGISTROS"
     )
     private Integer totalRegistros;
 
@@ -117,7 +122,7 @@ public class precrmReporteDescarga {
     // =========================================================
 
     @Column(
-        name = "MENSAJE_ERROR",
+        name = "VC_MENSAJE_ERROR",
         length = 1000
     )
     private String mensajeError;

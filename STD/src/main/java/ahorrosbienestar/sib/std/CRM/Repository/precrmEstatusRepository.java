@@ -7,12 +7,15 @@ import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.CRM.model.precrmEstatus;
 
+
 @Repository
 public interface precrmEstatusRepository
         extends JpaRepository<precrmEstatus, Integer> {
+
 
     List<precrmEstatus>
         findByActivoOrderByOrdenAsc(
             Integer activo
         );
+
 }

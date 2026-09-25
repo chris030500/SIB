@@ -53,10 +53,10 @@ public interface precrmSucursalConfigRepository
     // dentro de PRE CRM.
     //
     // Si nunca han sido configuradas:
-    //     ACTIVO_PRECRM = 0
+    //     I_ACTIVO_PRECRM = 0
     //
     // Si fueron desactivadas:
-    //     ACTIVO_PRECRM = 0
+    //     I_ACTIVO_PRECRM = 0
     // =====================================================
 
     @Query(
@@ -67,11 +67,11 @@ public interface precrmSucursalConfigRepository
           + "    S.VC_TIPOSUCURSAL AS tipoSucursal, "
           + "    S.I_REGIONID AS regionId, "
           + "    S.VC_ESTATUS AS estatusSucursal, "
-          + "    COALESCE(C.ACTIVO_PRECRM, 0) AS activoPrecrm "
+          + "    COALESCE(C.I_ACTIVO_PRECRM, 0) AS activoPrecrm "
           + "FROM SIB.TBL_SUCURSALES S "
           + "LEFT JOIN SIB.TBL_PRECRM_SUCURSAL_CONFIG C "
           + "    ON C.FK_SUCURSAL = S.PK_ID_SUCURSAL "
-          + "WHERE COALESCE(C.ACTIVO_PRECRM, 0) = 0 "
+          + "WHERE COALESCE(C.I_ACTIVO_PRECRM, 0) = 0 "
           + "ORDER BY S.VC_NOMBRESUCURSAL ASC",
         nativeQuery = true
     )
@@ -83,7 +83,7 @@ public interface precrmSucursalConfigRepository
     // SUCURSALES HABILITADAS EN PRE CRM
     //
     // Solo muestra las sucursales que tengan:
-    // ACTIVO_PRECRM = 1
+    // I_ACTIVO_PRECRM = 1
     // =====================================================
 
     @Query(
@@ -95,15 +95,15 @@ public interface precrmSucursalConfigRepository
           + "    S.I_REGIONID AS regionId, "
           + "    S.VC_ESTATUS AS estatusSucursal, "
           + "    C.PK_SUCURSAL_CONFIG AS pkSucursalConfig, "
-          + "    C.ACTIVO_PRECRM AS activoPrecrm, "
-          + "    C.FECHA_ALTA AS fechaAlta, "
-          + "    C.USUARIO_ALTA AS usuarioAlta, "
-          + "    C.FECHA_MODIFICACION AS fechaModificacion, "
-          + "    C.USUARIO_MODIFICACION AS usuarioModificacion "
+          + "    C.I_ACTIVO_PRECRM AS activoPrecrm, "
+          + "    C.DT_FECHA_ALTA AS fechaAlta, "
+          + "    C.VC_USUARIO_ALTA AS usuarioAlta, "
+          + "    C.DT_FECHA_MODIFICACION AS fechaModificacion, "
+          + "    C.VC_USUARIO_MODIFICACION AS usuarioModificacion "
           + "FROM SIB.TBL_SUCURSALES S "
           + "INNER JOIN SIB.TBL_PRECRM_SUCURSAL_CONFIG C "
           + "    ON C.FK_SUCURSAL = S.PK_ID_SUCURSAL "
-          + "WHERE C.ACTIVO_PRECRM = 1 "
+          + "WHERE C.I_ACTIVO_PRECRM = 1 "
           + "ORDER BY S.VC_NOMBRESUCURSAL ASC",
         nativeQuery = true
     )

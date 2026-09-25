@@ -11,43 +11,73 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_GESTION")
+@Table(
+    name = "TBL_PRECRM_GESTION",
+    schema = "SIB"
+)
 public class precrmGestion {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_GESTION")
     private Long pkGestion;
 
 
-    @Column(name = "FK_SOSPECHOSO", nullable = false)
+    @Column(
+        name = "FK_SOSPECHOSO",
+        nullable = false
+    )
     private Long fkSospechoso;
 
 
-    @Column(name = "TIPO_GESTION", nullable = false)
+    @Column(
+        name = "VC_TIPO_GESTION",
+        nullable = false,
+        length = 50
+    )
     private String tipoGestion;
 
 
-    @Column(name = "COMENTARIO")
+    @Column(
+        name = "VC_COMENTARIO",
+        length = 1000
+    )
     private String comentario;
 
 
-    @Column(name = "FECHA_PROXIMO_SEGUIMIENTO")
+    @Column(
+        name = "DT_FECHA_PROXIMO_SEGUIMIENTO"
+    )
     private LocalDateTime fechaProximoSeguimiento;
 
 
-    @Column(name = "FECHA_CITA")
+    @Column(
+        name = "DT_FECHA_CITA"
+    )
     private LocalDateTime fechaCita;
 
 
-    @Column(name = "USUARIO_GESTION", nullable = false)
+    @Column(
+        name = "VC_USUARIO_GESTION",
+        nullable = false,
+        length = 100
+    )
     private String usuarioGestion;
 
 
-    @Column(name = "FECHA_GESTION", nullable = false)
+    @Column(
+        name = "DT_FECHA_GESTION",
+        nullable = false
+    )
     private LocalDateTime fechaGestion;
 
+
+    // =========================================================
+    // GETTERS Y SETTERS
+    // =========================================================
 
     public Long getPkGestion() {
         return pkGestion;
@@ -57,7 +87,8 @@ public class precrmGestion {
     public void setPkGestion(
             Long pkGestion) {
 
-        this.pkGestion = pkGestion;
+        this.pkGestion =
+            pkGestion;
     }
 
 
@@ -69,7 +100,8 @@ public class precrmGestion {
     public void setFkSospechoso(
             Long fkSospechoso) {
 
-        this.fkSospechoso = fkSospechoso;
+        this.fkSospechoso =
+            fkSospechoso;
     }
 
 
@@ -81,7 +113,8 @@ public class precrmGestion {
     public void setTipoGestion(
             String tipoGestion) {
 
-        this.tipoGestion = tipoGestion;
+        this.tipoGestion =
+            tipoGestion;
     }
 
 
@@ -93,7 +126,8 @@ public class precrmGestion {
     public void setComentario(
             String comentario) {
 
-        this.comentario = comentario;
+        this.comentario =
+            comentario;
     }
 
 
@@ -106,7 +140,7 @@ public class precrmGestion {
             LocalDateTime fechaProximoSeguimiento) {
 
         this.fechaProximoSeguimiento =
-                fechaProximoSeguimiento;
+            fechaProximoSeguimiento;
     }
 
 
@@ -118,7 +152,8 @@ public class precrmGestion {
     public void setFechaCita(
             LocalDateTime fechaCita) {
 
-        this.fechaCita = fechaCita;
+        this.fechaCita =
+            fechaCita;
     }
 
 
@@ -130,7 +165,8 @@ public class precrmGestion {
     public void setUsuarioGestion(
             String usuarioGestion) {
 
-        this.usuarioGestion = usuarioGestion;
+        this.usuarioGestion =
+            usuarioGestion;
     }
 
 
@@ -142,6 +178,8 @@ public class precrmGestion {
     public void setFechaGestion(
             LocalDateTime fechaGestion) {
 
-        this.fechaGestion = fechaGestion;
+        this.fechaGestion =
+            fechaGestion;
     }
+
 }

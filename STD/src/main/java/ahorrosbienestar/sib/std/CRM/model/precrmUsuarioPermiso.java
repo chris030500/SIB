@@ -15,7 +15,10 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "TBL_PRECRM_USUARIO_PERMISO")
+@Table(
+    name = "TBL_PRECRM_USUARIO_PERMISO",
+    schema = "SIB"
+)
 public class precrmUsuarioPermiso {
 
 
@@ -24,7 +27,9 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     @Column(name = "PK_USUARIO_PERMISO")
     private Long pkUsuarioPermiso;
 
@@ -34,7 +39,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "USUARIO",
+        name = "VC_USUARIO",
         length = 100,
         nullable = false
     )
@@ -100,7 +105,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "ACTIVO",
+        name = "I_ACTIVO",
         nullable = false
     )
     private Integer activo;
@@ -111,7 +116,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "FECHA_ALTA",
+        name = "DT_FECHA_ALTA",
         nullable = false
     )
     private LocalDateTime fechaAlta;
@@ -122,7 +127,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "USUARIO_ALTA",
+        name = "VC_USUARIO_ALTA",
         length = 100
     )
     private String usuarioAlta;
@@ -133,7 +138,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "FECHA_MODIFICACION"
+        name = "DT_FECHA_MODIFICACION"
     )
     private LocalDateTime fechaModificacion;
 
@@ -143,7 +148,7 @@ public class precrmUsuarioPermiso {
     // =========================================================
 
     @Column(
-        name = "USUARIO_MODIFICACION",
+        name = "VC_USUARIO_MODIFICACION",
         length = 100
     )
     private String usuarioModificacion;

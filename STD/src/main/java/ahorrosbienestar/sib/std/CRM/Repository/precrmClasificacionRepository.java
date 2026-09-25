@@ -7,12 +7,15 @@ import org.springframework.stereotype.Repository;
 
 import ahorrosbienestar.sib.std.CRM.model.precrmClasificacion;
 
+
 @Repository
 public interface precrmClasificacionRepository
         extends JpaRepository<precrmClasificacion, Integer> {
+
 
     List<precrmClasificacion>
         findByActivoOrderByOrdenAsc(
             Integer activo
         );
+
 }

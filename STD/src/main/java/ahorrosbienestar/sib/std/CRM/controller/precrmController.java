@@ -273,6 +273,33 @@ public class precrmController {
                 principal != null
                 ? principal.getName()
                 : null;
+        
+        System.out.println(
+        	    "=========================================="
+        	);
+
+        	System.out.println(
+        	    "PRECRM - USUARIO AUTENTICADO SEGUIMIENTO"
+        	);
+
+        	System.out.println(
+        	    "USUARIO: ["
+        	    + usuario
+        	    + "]"
+        	);
+
+        	System.out.println(
+        	    "LONGITUD: "
+        	    + (
+        	        usuario != null
+        	            ? usuario.length()
+        	            : 0
+        	    )
+        	);
+
+        	System.out.println(
+        	    "=========================================="
+        	);
 
 
         if (!precrmService.tieneAcceso(
@@ -369,6 +396,13 @@ public class precrmController {
         	        estatus,
         	        fechaRegistro
         	    );
+        
+        System.out.println(
+        	    "PRECRM - REGISTROS ENCONTRADOS PARA ["
+        	    + usuario
+        	    + "]: "
+        	    + sospechosos.size()
+        	);
 
 
         model.addAttribute(

@@ -59,14 +59,12 @@ public interface precrmSospechosoRepository
 
     // =====================================================
     // BUSQUEDA GLOBAL CON FILTROS
+    // JPQL - USA PROPIEDADES JAVA
     // =====================================================
 
     @Query("""
-
         SELECT s
-
         FROM precrmSospechoso s
-
         WHERE s.activo = 1
 
         AND (
@@ -83,10 +81,8 @@ public interface precrmSospechosoRepository
 
         AND (
             :telefono IS NULL
-
             OR s.telefonoPrincipal
                 LIKE CONCAT('%', :telefono, '%')
-
             OR s.telefonoAlterno
                 LIKE CONCAT('%', :telefono, '%')
         )
@@ -114,7 +110,6 @@ public interface precrmSospechosoRepository
         )
 
         ORDER BY s.fechaRegistro DESC
-
     """)
     List<precrmSospechoso> buscarSospechosos(
 
@@ -144,6 +139,7 @@ public interface precrmSospechosoRepository
 
     // =====================================================
     // BUSCAR SOSPECHOSOS ASIGNADOS AL USUARIO
+    // SQL NATIVO
     // =====================================================
 
     @Query(
@@ -155,40 +151,42 @@ public interface precrmSospechosoRepository
             "INNER JOIN SIB.TBL_PRECRM_ASIGNACION A " +
             "ON A.FK_SOSPECHOSO = S.PK_SOSPECHOSO " +
 
-            "WHERE S.ACTIVO = 1 " +
+            "WHERE S.I_ACTIVO = 1 " +
 
-            "AND A.ACTIVO = 1 " +
+            "AND A.I_ACTIVO = 1 " +
 
-            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "AND LOWER(TRIM(A.VC_USUARIO_ASIGNADO)) " +
             "    = LOWER(TRIM(:usuario)) " +
 
             "AND (:folio IS NULL " +
-            "     OR S.FOLIO LIKE " +
+            "     OR S.VC_FOLIO LIKE " +
             "        CONCAT('%', :folio, '%')) " +
 
             "AND (:nombre IS NULL " +
-            "     OR LOWER(S.NOMBRE) LIKE " +
+            "     OR LOWER(S.VC_NOMBRE) LIKE " +
             "        LOWER(CONCAT('%', :nombre, '%'))) " +
 
             "AND (:telefono IS NULL " +
-            "     OR S.TELEFONO_PRINCIPAL LIKE " +
+            "     OR S.VC_TELEFONO_PRINCIPAL LIKE " +
+            "        CONCAT('%', :telefono, '%') " +
+            "     OR S.VC_TELEFONO_ALTERNO LIKE " +
             "        CONCAT('%', :telefono, '%')) " +
 
             "AND (:clasificacion IS NULL " +
-            "     OR UPPER(S.CLASIFICACION) " +
+            "     OR UPPER(S.VC_CLASIFICACION) " +
             "        = UPPER(:clasificacion)) " +
 
             "AND (:estatus IS NULL " +
-            "     OR UPPER(S.ESTATUS) " +
+            "     OR UPPER(S.VC_ESTATUS) " +
             "        = UPPER(:estatus)) " +
 
             "AND (:fechaInicio IS NULL " +
-            "     OR S.FECHA_REGISTRO >= :fechaInicio) " +
+            "     OR S.DT_FECHA_REGISTRO >= :fechaInicio) " +
 
             "AND (:fechaFin IS NULL " +
-            "     OR S.FECHA_REGISTRO < :fechaFin) " +
+            "     OR S.DT_FECHA_REGISTRO < :fechaFin) " +
 
-            "ORDER BY S.FECHA_REGISTRO DESC",
+            "ORDER BY S.DT_FECHA_REGISTRO DESC",
 
         nativeQuery = true
     )
@@ -218,6 +216,7 @@ public interface precrmSospechosoRepository
 
         @Param("fechaFin")
         LocalDateTime fechaFin
+
     );
 
 
@@ -234,14 +233,14 @@ public interface precrmSospechosoRepository
             "INNER JOIN SIB.TBL_PRECRM_ASIGNACION A " +
             "ON A.FK_SOSPECHOSO = S.PK_SOSPECHOSO " +
 
-            "WHERE S.ACTIVO = 1 " +
+            "WHERE S.I_ACTIVO = 1 " +
 
-            "AND A.ACTIVO = 1 " +
+            "AND A.I_ACTIVO = 1 " +
 
-            "AND UPPER(S.ESTATUS) " +
+            "AND UPPER(S.VC_ESTATUS) " +
             "    = UPPER(:estatus) " +
 
-            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "AND LOWER(TRIM(A.VC_USUARIO_ASIGNADO)) " +
             "    = LOWER(TRIM(:usuario))",
 
         nativeQuery = true
@@ -253,6 +252,7 @@ public interface precrmSospechosoRepository
 
         @Param("usuario")
         String usuario
+
     );
 
 
@@ -271,11 +271,11 @@ public interface precrmSospechosoRepository
 
             "WHERE S.PK_SOSPECHOSO = :pkSospechoso " +
 
-            "AND S.ACTIVO = 1 " +
+            "AND S.I_ACTIVO = 1 " +
 
-            "AND A.ACTIVO = 1 " +
+            "AND A.I_ACTIVO = 1 " +
 
-            "AND LOWER(TRIM(A.USUARIO_ASIGNADO)) " +
+            "AND LOWER(TRIM(A.VC_USUARIO_ASIGNADO)) " +
             "    = LOWER(TRIM(:usuario))",
 
         nativeQuery = true
@@ -287,6 +287,7 @@ public interface precrmSospechosoRepository
 
         @Param("usuario")
         String usuario
+
     );
 
 }

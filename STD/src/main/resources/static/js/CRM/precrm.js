@@ -1356,9 +1356,7 @@ window.confirmarQuitarUsuarioPRECRM = function(boton) {
         if (result.isConfirmed) {
             formulario.submit();
         }
-
     });
-
 };
 
 

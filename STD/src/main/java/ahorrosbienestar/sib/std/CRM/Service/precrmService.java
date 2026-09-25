@@ -1081,8 +1081,10 @@ public void actualizarTelefonoAlterno(
 
 
             detalle.setIdForm(
-                registro.getId()
-            );
+            	    convertirIdForm(
+            	        registro.getId()
+            	    )
+            	);
 
 
             detalle.setHoraInicio(
@@ -4082,169 +4084,162 @@ public String obtenerRolPrecrmUsuario(
 @Transactional
 public precrmUsuarioRol asignarRolPrecrm(
 
-      Integer fkUsuario,
-      Integer fkRol,
-      String usuarioAdministrador) {
+     String usuario,
+     Integer fkRol,
+     String usuarioAdministrador) {
 
 
-  // =====================================================
-  // VALIDAR USUARIO
-  // =====================================================
+ // =====================================================
+ // VALIDAR USUARIO
+ // =====================================================
 
-  if (fkUsuario == null) {
+ usuario =
+     normalizarUsuarioPRECRM(
+         usuario
+     );
 
-      throw new RuntimeException(
-          "Debe seleccionar un usuario."
-      );
-  }
+ if (
+     usuario == null
+     || usuario.isEmpty()
+ ) {
 
-
-  // =====================================================
-  // VALIDAR ROL
-  // =====================================================
-
-  if (fkRol == null) {
-
-      throw new RuntimeException(
-          "Debe seleccionar un rol PRE CRM."
-      );
-  }
+     throw new RuntimeException(
+         "Debe seleccionar un usuario."
+     );
+ }
 
 
-  // =====================================================
-  // VALIDAR QUE SEA UN ROL PERMITIDO PARA PRE CRM
-  // =====================================================
+ // =====================================================
+ // VALIDAR ROL
+ // =====================================================
 
-  if (
-      usuarioRolRepository
-          .contarRolPrecrmActivo(
-              fkRol
-          ) == 0
-  ) {
+ if (fkRol == null) {
 
-      throw new RuntimeException(
-          "El rol seleccionado no corresponde "
-          + "a un rol válido de PRE CRM."
-      );
-  }
+     throw new RuntimeException(
+         "Debe seleccionar un rol PRE CRM."
+     );
+ }
 
 
-  // =====================================================
-  // NORMALIZAR USUARIO ADMINISTRADOR
-  // =====================================================
+ // =====================================================
+ // VALIDAR QUE SEA UN ROL PERMITIDO PARA PRE CRM
+ // =====================================================
 
-  usuarioAdministrador =
-      normalizarUsuarioPRECRM(
-          usuarioAdministrador
-      );
+ if (
+     usuarioRolRepository
+         .contarRolPrecrmActivo(
+             fkRol
+         ) == 0
+ ) {
 
-
-  if (
-      usuarioAdministrador == null
-      || usuarioAdministrador.isEmpty()
-  ) {
-
-      usuarioAdministrador =
-          "sistema";
-  }
+     throw new RuntimeException(
+         "El rol seleccionado no corresponde "
+         + "a un rol válido de PRE CRM."
+     );
+ }
 
 
-  // =====================================================
-  // BUSCAR SI EL USUARIO YA TIENE ROL PRE CRM
-  // =====================================================
+ // =====================================================
+ // NORMALIZAR USUARIO ADMINISTRADOR
+ // =====================================================
 
-  Optional<precrmUsuarioRol> existente =
-      usuarioRolRepository
-          .findByFkUsuario(
-              fkUsuario
-          );
+ usuarioAdministrador =
+     normalizarUsuarioPRECRM(
+         usuarioAdministrador
+     );
 
+ if (
+     usuarioAdministrador == null
+     || usuarioAdministrador.isEmpty()
+ ) {
 
-  // =====================================================
-  // SI YA EXISTE → CAMBIAR / REACTIVAR
-  // =====================================================
-
-  if (existente.isPresent()) {
-
-
-      precrmUsuarioRol asignacion =
-          existente.get();
+     usuarioAdministrador =
+         "sistema";
+ }
 
 
-      asignacion.setFkRol(
-          fkRol
-      );
+ // =====================================================
+ // BUSCAR SI EL USUARIO YA TIENE ROL PRE CRM
+ // =====================================================
+
+ Optional<precrmUsuarioRol> existente =
+     usuarioRolRepository
+         .findByUsuario(
+             usuario
+         );
 
 
-      asignacion.setActivo(
-          1
-      );
+ // =====================================================
+ // SI YA EXISTE -> CAMBIAR / REACTIVAR
+ // =====================================================
+
+ if (existente.isPresent()) {
+
+     precrmUsuarioRol asignacion =
+         existente.get();
+
+     asignacion.setFkRol(
+         fkRol
+     );
+
+     asignacion.setActivo(
+         1
+     );
+
+     asignacion.setFechaModificacion(
+         LocalDateTime.now()
+     );
+
+     asignacion.setUsuarioModificacion(
+         usuarioAdministrador
+     );
+
+     return usuarioRolRepository
+         .saveAndFlush(
+             asignacion
+         );
+ }
 
 
-      asignacion.setFechaModificacion(
-          LocalDateTime.now()
-      );
+ // =====================================================
+ // SI NO EXISTE -> CREAR NUEVA ASIGNACION
+ // =====================================================
 
+ precrmUsuarioRol nuevaAsignacion =
+     new precrmUsuarioRol();
 
-      asignacion.setUsuarioModificacion(
-          usuarioAdministrador
-      );
+ nuevaAsignacion.setUsuario(
+     usuario
+ );
 
+ nuevaAsignacion.setFkRol(
+     fkRol
+ );
 
-      return usuarioRolRepository
-          .saveAndFlush(
-              asignacion
-          );
-  }
+ nuevaAsignacion.setActivo(
+     1
+ );
 
+ nuevaAsignacion.setFechaAlta(
+     LocalDateTime.now()
+ );
 
-  // =====================================================
-  // SI NO EXISTE → CREAR NUEVA ASIGNACION
-  // =====================================================
+ nuevaAsignacion.setUsuarioAlta(
+     usuarioAdministrador
+ );
 
-  precrmUsuarioRol nuevaAsignacion =
-      new precrmUsuarioRol();
+ nuevaAsignacion.setFechaModificacion(
+     null
+ );
 
+ nuevaAsignacion.setUsuarioModificacion(
+     null
+ );
 
-  nuevaAsignacion.setFkUsuario(
-      fkUsuario
-  );
-
-
-  nuevaAsignacion.setFkRol(
-      fkRol
-  );
-
-
-  nuevaAsignacion.setActivo(
-      1
-  );
-
-
-  nuevaAsignacion.setFechaAlta(
-      LocalDateTime.now()
-  );
-
-
-  nuevaAsignacion.setUsuarioAlta(
-      usuarioAdministrador
-  );
-
-
-  nuevaAsignacion.setFechaModificacion(
-      null
-  );
-
-
-  nuevaAsignacion.setUsuarioModificacion(
-      null
-  );
-
-
-  return usuarioRolRepository
-      .saveAndFlush(
-          nuevaAsignacion
-      );
+ return usuarioRolRepository
+     .saveAndFlush(
+         nuevaAsignacion
+     );
 }
 
 //=========================================================
@@ -4480,6 +4475,32 @@ private void asignarSospechosoPorNombreRegistro(
      + " | USUARIO: "
      + usuarioAsignado
  );
+}
+
+//=========================================================
+//CONVERTIR ID FORM
+//=========================================================
+
+private Integer convertirIdForm(
+     String valor) {
+
+ if (
+     valor == null
+     || valor.trim().isEmpty()
+ ) {
+     return null;
+ }
+
+ try {
+
+     return Integer.valueOf(
+         valor.trim()
+     );
+
+ } catch (NumberFormatException e) {
+
+     return null;
+ }
 }
 
 }

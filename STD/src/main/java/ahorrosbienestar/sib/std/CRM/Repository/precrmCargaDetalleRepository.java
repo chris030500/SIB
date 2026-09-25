@@ -14,9 +14,9 @@ public interface precrmCargaDetalleRepository
 
 
     boolean existsByNombreProspectoIgnoreCaseAndTelefonoContactoAndResultadoCarga(
-            String nombreProspecto,
-            String telefonoContacto,
-            String resultadoCarga
+        String nombreProspecto,
+        String telefonoContacto,
+        String resultadoCarga
     );
 
 
@@ -25,4 +25,5 @@ public interface precrmCargaDetalleRepository
             Long fkCarga,
             List<String> resultados
         );
+
 }

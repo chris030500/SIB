@@ -16,7 +16,10 @@ import jakarta.persistence.Table;
 // =========================================================
 
 @Entity
-@Table(name = "TBL_PRECRM_SUCURSAL_CONFIG")
+@Table(
+    name = "TBL_PRECRM_SUCURSAL_CONFIG",
+    schema = "SIB"
+)
 public class precrmSucursalConfig {
 
 
@@ -52,7 +55,7 @@ public class precrmSucursalConfig {
     // =====================================================
 
     @Column(
-        name = "ACTIVO_PRECRM",
+        name = "I_ACTIVO_PRECRM",
         nullable = false
     )
     private Integer activoPrecrm;
@@ -63,7 +66,7 @@ public class precrmSucursalConfig {
     // =====================================================
 
     @Column(
-        name = "FECHA_ALTA",
+        name = "DT_FECHA_ALTA",
         nullable = false
     )
     private LocalDateTime fechaAlta;
@@ -74,7 +77,7 @@ public class precrmSucursalConfig {
     // =====================================================
 
     @Column(
-        name = "USUARIO_ALTA",
+        name = "VC_USUARIO_ALTA",
         length = 100,
         nullable = false
     )
@@ -86,7 +89,7 @@ public class precrmSucursalConfig {
     // =====================================================
 
     @Column(
-        name = "FECHA_MODIFICACION"
+        name = "DT_FECHA_MODIFICACION"
     )
     private LocalDateTime fechaModificacion;
 
@@ -96,7 +99,7 @@ public class precrmSucursalConfig {
     // =====================================================
 
     @Column(
-        name = "USUARIO_MODIFICACION",
+        name = "VC_USUARIO_MODIFICACION",
         length = 100
     )
     private String usuarioModificacion;

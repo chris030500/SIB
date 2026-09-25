@@ -34,7 +34,7 @@ public class precrmAsignacion {
 
 
     @Column(
-        name = "USUARIO_ASIGNADO",
+        name = "VC_USUARIO_ASIGNADO",
         nullable = false,
         length = 100
     )
@@ -42,32 +42,34 @@ public class precrmAsignacion {
 
 
     @Column(
-        name = "ACTIVO",
+        name = "I_ACTIVO",
         nullable = false
     )
     private Integer activo;
 
 
     @Column(
-        name = "FECHA_ASIGNACION",
+        name = "DT_FECHA_ASIGNACION",
         nullable = false
     )
     private LocalDateTime fechaAsignacion;
 
 
     @Column(
-        name = "USUARIO_ASIGNA",
+        name = "VC_USUARIO_ASIGNA",
         length = 100
     )
     private String usuarioAsigna;
 
 
-    @Column(name = "FECHA_FIN")
+    @Column(
+        name = "DT_FECHA_FIN"
+    )
     private LocalDateTime fechaFin;
 
 
     @Column(
-        name = "USUARIO_MODIFICACION",
+        name = "VC_USUARIO_MODIFICACION",
         length = 100
     )
     private String usuarioModificacion;
